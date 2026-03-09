@@ -9,6 +9,20 @@ A Telegram bot for managing your computer and game macros remotely
 - Taking screenshots and recording videos from your screen
 - Shutting down or rebooting the PC
 
+# Setup
+## Windows
+1. Installing Python
+
+Visit https://www.python.org/downloads/windows/ to download and install Python.\
+Make sure to install the built-in library as well. 
+
+2. Installing requirements
+> **Automatic installation with pip**\
+> Launch the [requirements.py](requirements.py) file to automatically install all requirements with pip.
+
+> **[requirements.txt](requirements.txt)**\
+> This file has all required modules for manual installation. 
+
 # To do
 
  - [ ] Custom commands support
