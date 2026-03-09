@@ -84,7 +84,7 @@ bonEnabled = True
 #   - shutdown delay will be double
 #   - bot online notification won't be sent
 # this is only intended for development and testing, so please keep it False unless you know what you're doing.
-testmode = True
+testmode = False
 # default and recommended: False
 
 # Print a message and exit if this file is executed
