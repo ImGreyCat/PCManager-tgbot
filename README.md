@@ -11,12 +11,19 @@ A Telegram bot for managing your computer and game macros remotely
 
 # Setup
 ## Windows
-1. Installing Python
+1. Install ffmpeg
+> **Download the build from gyan.dev (personally recommend this)**\
+> [Download this 7z archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) and extract it to C:\ffmpeg
+
+> **Add ffmpeg to PATH**\
+> Open Search, find and open "Edit the system environment variables", then add C:\ffmpeg\bin to the system Path variable.
+
+2. Install Python
 
 Visit https://www.python.org/downloads/windows/ to download and install Python.\
 Make sure to install the built-in library as well. 
 
-2. Installing requirements
+3. Install requirements
 > **Automatic installation with pip**\
 > Launch the [requirements.py](requirements.py) file to automatically install all requirements with pip.
 
@@ -25,8 +32,8 @@ Make sure to install the built-in library as well.
 
 # To do
 
- - [ ] Custom commands support
- - [ ] Move to async
- - [ ] Launching multiple macro .exes
+ - [ ] Add custom commands support
+ - [ ] Move to asynchronous 
+ - [ ] Support for multiple macro .exes and launching them separately
  - [ ] De-spaghetti the code 
 
