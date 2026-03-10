@@ -1,0 +1,770 @@
+print("Starting up...")
+import time
+beginTime = time.time()
+try: # import config
+    from config import *
+except Exception as e:
+    print("[ERROR] Cannot start: failed to import config! Please check it for any errors. (",e,")")
+    input("Press Enter to exit...")
+    raise SystemExit
+else:
+    print("Imported config")
+
+try:
+    from locales import strings # importing custom locales
+except ImportError:
+    pass
+else:
+    print(f"[DEVELOPER] Imported custom languages: {', '.join(strings)}")
+
+try: # import modules
+    import telebot
+    import keyboard
+    import platform
+    import subprocess
+    import threading
+    from PIL import ImageGrab
+    import io
+    import socket
+    import datetime
+    import random
+    from colorama import init, Fore, Back, Style
+except ImportError as error:
+    print("[ERROR] Something went wrong while importing one or more modules. Please make sure you have the default Python library and required modules installed before starting. (",error,")")
+    input("Press Enter to exit...")
+    raise SystemExit
+
+init(autoreset=True)
+
+# ======== version setup ========
+
+version = "rolling-developer"
+build = "654"
+hostname = socket.gethostname()
+system = platform.system()
+release = platform.release()
+kernelver = platform.version()
+
+# paths for shutdown commands
+SHUTDOWN_PATH = rf"C:\Windows\System32\shutdown.exe -s -t {shtdwndelay}"
+REBOOT_PATH = rf"C:\Windows\System32\shutdown.exe -r -t {shtdwndelay}"
+CANCELSHUTDOWN_PATH = r"C:\Windows\System32\shutdown.exe -a"
+BADAPPLE_PATH = r'C:\Program Files (x86)\vlc-3.0.23\vlc.exe C:\badapple.mp4'
+
+# preset some values here to avoid errors
+isPendingShutdown = False
+pendingshutdowntype = "none"
+shtdwntime= "none"
+now = "undefined"
+
+# add everybody from ADMINS to USERS
+USERS.update(ADMINS)
+
+# setup the testmode changes
+if testmode == True:
+    print(Fore.YELLOW+"[WARNING] testmode is on. see the config file to learn more about what it does")
+    MACRO_PATH = r"C:\Windows\System32\calc.exe"
+    TOKEN = "8264637187:AAEhJ01WZUf69vD1-vqslcVcUz_eOrVTs28" # test bot token
+    shtdwndelay = shtdwndelay*2
+    SHUTDOWN_PATH = rf"C:\Windows\System32\shutdown.exe -s -t {shtdwndelay}"
+    REBOOT_PATH = rf"C:\Windows\System32\shutdown.exe -r -t {shtdwndelay}"
+    
+if not system == "Windows" and bypassSystemCheck == False: # check the os
+    print(Fore.RED + f"[ERROR] cannot continue on your os: {system}. if you're using windows or you know what you're doing, see config file")
+    input("Press Enter to exit...")
+    raise SystemExit
+# here we check if the userlist is empty and if it is we start in emergency mode to make adding users easier
+if not USERS:
+    print(Fore.RED + "[ERROR] cannot continue running normally without users! please add at least one (see config file for instructions)")
+    print("Connecting to Telegram Bot API and starting in emergency mode. Only /myid will be available.")
+    bot = telebot.TeleBot(TOKEN)
+    @bot.message_handler(commands=['myid'])
+    def my_id(message):
+        userid = message.from_user.id
+        bot.reply_to(message,f"UserID: {userid}")
+    print("Connected. You can use /myid to get your UserID. Use CTRL+C to stop the bot.")
+    bot.infinity_polling()
+
+COMMANDS = [
+    {"cmd": "start",
+     "desc": "Приветственное сообщение",
+     "func": "start_func",
+     "admin": False},
+    
+    {"cmd": "launch",
+     "desc": "Запустить .exe макроса",
+     "func": "launchpad_func",
+     "admin": True},
+
+    {"cmd": "alt_f4",
+     "desc": "[✨ Новое] Закрыть приложение в фокусе",
+     "func": "closeapp_func",
+     "admin": True},
+    
+    {"cmd": "startmacro",
+     "desc": 'Нажать кнопку "старт"',
+     "func": "startmacro_func",
+     "admin": False},
+    
+    {"cmd": "stopmacro",
+     "desc": 'Нажать кнопку "стоп"',
+     "func": "stopmacro_func",
+     "admin": False},
+
+    {"cmd": "keyboard",
+     "desc": '[✨ Новое] Отправить клавишу на компьютер',
+     "func": "keyboard_func",
+     "admin": False},
+    
+    {"cmd": "screenshot",
+     "desc": "Сделать скриншот",
+     "func": "screenshot_func",
+     "admin": False},
+
+    {"cmd": "video",
+     "desc": "Записать видео",
+     "func": "video_func",
+     "admin": False},
+
+    {"cmd": "stop",
+     "desc": "[✨ Новое] Выключить бота",
+     "func": "stop_func",
+     "admin": True},
+
+    {"cmd": "shutdown",
+     "desc": "[✨ Новое] Выключить компьютер",
+     "func": "shutdown_func",
+     "admin": True},
+
+    {"cmd": "reboot",
+     "desc": "[✨ Новое] Перезагрузить компьютер",
+     "func": "reboot_func",
+     "admin": True},
+
+    {"cmd": "cancelshutdown",
+     "desc": "[✨ Новое] Отменить перезагрузку/выключение",
+     "func": "cancel_shutdown_func",
+     "admin": True},
+
+    {"cmd": "settings",
+     "desc": "[✨ Новое] Получить текущие настройки",
+     "func": "settings_func",
+     "admin": False},
+
+    {"cmd": "info",
+     "desc": "Разная информация о боте",
+     "func": "info_func",
+     "admin": False}
+]
+
+COMMANDS_LKUP = {c["cmd"]: c for c in COMMANDS}
+
+# -------------------- initialize bot -------------------- #
+print("Connecting to Telegram Bot API..")
+bot = telebot.TeleBot(TOKEN)
+print("Syncing command list...")
+bot.set_my_commands([telebot.types.BotCommand(c["cmd"], c["desc"]) for c in COMMANDS]) # creates command list for every cmd
+print("Synced!")
+
+# ------------------ basic functions ------------------  #
+
+# ---------- Screenshot ---------
+def take_screenshot(chat_id):
+    now = get_time()
+    print(f"[DEBUG] [{now}] taking screenshot")
+    screenshot = ImageGrab.grab()
+    bio = io.BytesIO()
+    bio.name = "screenshot.png"
+    screenshot.save(bio, "PNG")
+    bio.seek(0)
+    print("[DEBUG]",now,"sending screenshot to chat",chat_id) 
+    bot.send_photo(chat_id, bio, caption=strings[language]["scrshot_capt"].format(NOW=get_time())) # sends the taken screenshot right away
+
+# ------------ Video recording (RAM) -------------- #
+# ---------- records a video into ram ------------- #
+def record_video_ram(chat_id=None, length=videoLength, bitrate="4000k"):
+    now = get_time()
+    video_buffer = None
+    print(f"[DEBUG] [{now}] video requested for chat {chat_id}, recording now...")
+    cmd = [
+        "ffmpeg",
+        "-f", "gdigrab",
+        "-framerate", "60", 
+        "-i", "desktop",
+        "-t", f"{length}", # this is the video length
+        "-vcodec", "libx265", # change this to "libx264" if the video doesn't play
+        "-b:v", f"{bitrate}", # this is the bitrate
+        "-preset", "ultrafast",
+        "-pix_fmt", "yuv420p",
+        "-movflags", "frag_keyframe+empty_moov",
+        "-f", "mp4",
+        "pipe:1" # makes the video save to ram
+    ]
+    print(f"[DEBUG] ffmpeg arguments: {cmd}")
+    # This flag prevents the console window from appearing on Windows. We use 0x08000000 directly to avoid import errors on different OS types
+    CREATE_NO_WINDOW = 0x08000000
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        creationflags=CREATE_NO_WINDOW
+    )
+
+    video_bytes, err = process.communicate()
+    if process.returncode != 0:
+        print(Fore.RED+f"[DEBUG] [ERROR] ffmpeg error: {err.decode()}")
+
+    video_buffer = io.BytesIO(video_bytes)
+    video_buffer.name = "recording.mp4"  # telegram requires a filename so we're setting it here
+    now = get_time()
+    print(f"[DEBUG] [{now}] finished recording, sending...")
+    bot.send_chat_action(chat_id, 'upload_video')
+    bot.send_video(chat_id, video_buffer,caption=strings[language]["vid_capt"].format(NOW=get_time()))
+
+# --------------------- Video recording (storage, deprecated) ---------------------- #
+# ----------------- only use this if the ram recording doesnt work ----------------- #
+def record_video_storage(filename="video.mp4"):
+    print("[DEBUG] starting recording with ffmpeg")
+    cmd = [
+        "ffmpeg",
+        "-y",
+        "-f", "gdigrab",
+        "-framerate", "10",
+        "-t", "15",
+        "-i", "desktop",
+        "-vf", "scale=1280:-1",
+        "-c:v", "libx264",
+        "-preset", "veryfast",
+        "-crf", "32",
+        filename
+    ]
+    subprocess.run(cmd)
+    return filename
+
+def manage_macro(action):
+    count = keyPresses
+    if action == "start":
+        key=startkey
+    if action== "stop":
+        key=stopkey
+    if action!="start" and action!="stop":
+        print(Fore.RED+f"[ERROR] invalid action passed to manage_macro(): {action}")
+        return
+    for i in range(count):
+        sentTimes = i+1
+        keyboard.send(key)
+        print(f"[DEBUG] sent {key} ({sentTimes}/{count})")
+        time.sleep(1)
+    print("[DEBUG] finished sending!")
+    return
+
+# returns current time like 12:34:56 with the offset in seconds
+def get_time(offset=0):
+    is24hr = use24HourTime
+    now = datetime.datetime.now() + datetime.timedelta(seconds=offset) # gets current time and adds the offset in seconds
+    if is24hr == True:
+        formatted_time = now.strftime("%H:%M:%S")
+        return formatted_time
+    formatted_time = now.strftime("%I:%M:%S %p")
+    return formatted_time # format and return
+
+
+# ------------------- helper functions -------------------
+
+# authenticates user, also gets their admin status
+def authenticate(user_id, target="do unknown action",adminOnly=False,fail=False):
+    isauser=False
+    isanadmin=False
+    if user_id in USERS:
+        isauser=True
+    if user_id in ADMINS:
+        isanadmin=True
+    if adminOnly==False and (isauser==True):
+        print(f"[DEBUG] {user_id} authenticated to {target} successfully")
+        return True
+    if adminOnly==True and isanadmin==True:
+        print(Fore.MAGENTA+f"[DEBUG] [ADMIN] {user_id} authenticated to {target} successfully")
+        return True
+    if adminOnly==True and (isauser==True and isanadmin==False):
+        print(f"[DEBUG] {user_id} tried authenticating to {target}, but isn't an admin")
+        bot.send_message(user_id, strings[language]["notanadmin_msg"],parse_mode="Markdown")
+    print(f"[DEBUG] {user_id} tried authenticating to {target}, but isn't a user")
+    bot.send_message(user_id, strings[language]["err403msg"],parse_mode="Markdown")
+    return False
+
+def is_admin(user_id):
+    admin="n"
+    if user_id in ADMINS:
+        admin="y"
+    return admin
+
+def notify_online(force=False):
+    if bonEnabled == False and force!=True:
+        print("[DEBUG] BON is disabled, not sending")
+        return
+    if not testmode == True or force==True: # ensures that testmode is off
+        now = get_time()
+        for uid in USERS:
+            print("[DEBUG] sending BON to",uid)
+            bot.send_message(uid,strings[language]["BON_msg"].format(HOSTNAME=hostname,NOW=get_time()),parse_mode="Markdown")
+    return
+
+def get_uptime():
+    uptimeS = int(time.time()) - starttime
+    uptime = datetime.timedelta(seconds=int(uptimeS))
+    return uptime
+
+def delete_msg(message): # deletes the message passed to the function
+    msgid = message.message_id
+    chatid = message.chat.id
+    print("[DEBUG] deleting message",msgid,"from chat", chatid)
+    bot.delete_message(chatid,msgid,5)
+
+def stop_bot():
+    bot.stop_polling()
+    time.sleep(3)
+    print("[DEBUG] bot stopped")
+    input("Bot stopped, press Enter to exit...")
+    raise SystemExit
+
+#
+# ------------------- commands and their functions -------------------
+#
+def start_func(message):
+    if not authenticate(message.from_user.id,"get the welcome message",COMMANDS_LKUP["start"]["admin"]):
+        return
+
+    # sends the welcome message
+    bot.reply_to(message,strings[language]["welcome_msg"].format(NAME=USERS[message.from_user.id]))
+
+def launchpad_func(message):
+    if not authenticate(message.from_user.id,"launch the macro .exe",COMMANDS_LKUP["launch"]["admin"]):
+        return
+    subprocess.Popen(MACRO_PATH)
+    bot.reply_to(message, strings[language]["startedEXE_msg"])
+
+def closeapp_func(message):
+    if not authenticate(message.from_user.id,"close the app in the front",COMMANDS_LKUP["alt_f4"]["admin"]):
+        return
+    sent = bot.send_message(message.chat.id,"Отправляю Alt+F4...")
+    keyboard.press('alt')
+    keyboard.press('f4')
+    keyboard.release('f4')
+    keyboard.release('alt')
+    delete_msg(sent)
+    bot.reply_to(message,"Alt+F4 успешно отправлено!") 
+
+def startmacro_func(message):
+    if not authenticate(message.from_user.id,"send the start key",COMMANDS_LKUP["startmacro"]["admin"]):
+        return
+    manage_macro("start")
+    if recordOnStart == True:
+        bot.reply_to(message, strings[language]["startsent_vid_msg"])
+        chat_id = message.chat.id
+        record_video_ram(chat_id)
+        return
+    bot.reply_to(message, strings[language]["startsent_novid_msg"])
+
+def stopmacro_func(message):
+    if not authenticate(message.from_user.id, "send the stop key",COMMANDS_LKUP["stopmacro"]["admin"]):
+        return
+    manage_macro("stop")
+    bot.reply_to(message, strings[language]["stopsent_msg"])
+
+def keyboard_func(message):
+    global keyToSend
+    keyToSend = None
+    if not authenticate(message.from_user.id,"send a key to the keyboard",COMMANDS_LKUP["keyboard"]["admin"]):
+        return
+    parts = message.text.split()
+    try:
+        keyToSend = parts[1].lower()
+    except IndexError as ie:
+        pass
+        bot.reply_to(message,strings[language]["nokey_msg"])
+        print(Fore.YELLOW+f"[WARNING] key to send wasn't specified")
+        return
+    
+    if keyToSend != None:
+        try:
+            keyboard.send(keyToSend)
+        except ValueError as ve:
+            pass
+            bot.reply_to(message,strings[language]["invalidkey_msg"])
+            print(Fore.YELLOW+f"[WARNING] invalid key specified")
+            return
+        bot.reply_to(message,strings[language]["sentkey_msg"].format(SENTKEY=keyToSend))
+
+def screenshot_func(message):
+    if not authenticate(message.from_user.id, "take a screenshot",COMMANDS_LKUP["screenshot"]["admin"]):
+        return
+    sent = bot.reply_to(message,strings[language]["takingscrshot_msg"])
+    take_screenshot(message.chat.id)
+    delete_msg(sent)
+    
+def video_func(message):
+    if not authenticate(message.from_user.id, "record a video",COMMANDS_LKUP["video"]["admin"]):
+        return
+    sent = bot.send_message(message.chat.id,strings[language]["recordingvid_msg"],parse_mode="Markdown")
+    record_video_ram(message.chat.id)
+    delete_msg(sent)
+
+def info_func(message):
+    if not authenticate(message.from_user.id,"request info",COMMANDS_LKUP["info"]["admin"]):
+        return
+    if testmode is not True and testmode is not False:
+        tmstatus=strings[language]["unknown"]
+    else:
+        tmstatus=strings[language][testmode]
+    uptime = get_uptime()
+    ping1= time.time()
+    sent = bot.send_message(message.chat.id,strings[language]["chkping_msg"])
+    ping2=time.time()
+    delete_msg(sent)
+    ping=round((ping2-ping1)*1000,1) # this is RTT
+    now = get_time()
+    name = USERS[message.from_user.id]
+    bot.reply_to(message, strings[language]["info_msg"].format(NAME=name,ISADMIN=strings[language][is_admin(message.from_user.id)],HOSTNAME=hostname,SYSTEM=system,RELEASE=release,KERNELVER=kernelver,NOW=now,PING=ping,VERSION=version,BUILD=build,UPTIME=uptime,TOOKTOSTART=tookToStart,TMSTATUS=tmstatus), parse_mode="Markdown")
+    print("[DEBUG] uptime:",get_uptime())
+
+def stop_func(message):
+    # ts is needed in EVERY function that uses those values
+    global isPendingShutdown
+    global pendingshutdowntype
+    global shtdwntime
+    global stopTimer
+    
+    if not authenticate(message.from_user.id,"stop the bot",COMMANDS_LKUP["stop"]["admin"]):
+        return
+    if isPendingShutdown == True:
+        print(Fore.YELLOW+"[DEBUG] [WARNING] user",message.from_user.id,"tried initiating a bot stop, but there's already a",pendingshutdowntype,"at",shtdwntime,"pending")
+        bot.reply_to(message, strings[language]["alrpending_msg"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+        return
+    stopTimer = threading.Timer(shtdwndelay, stop_bot)
+    stopTimer.start()
+    isPendingShutdown = True
+    pendingshutdowntype = strings[language]["stop"]
+    shtdwntime = get_time(shtdwndelay)
+    print("[DEBUG] user",message.from_user.id,"requested bot stop, stopping at",shtdwntime,"...")
+    bot.reply_to(message, strings[language]["pendingstop_msg"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+    return
+
+def shutdown_func(message):
+    # ts is needed in EVERY function that uses those values
+    global isPendingShutdown
+    global pendingshutdowntype
+    global shtdwntime
+    
+    if not authenticate(message.from_user.id,"turn off the RPC",COMMANDS_LKUP["shutdown"]["admin"]):
+        return
+    if isPendingShutdown == True:
+        print(Fore.YELLOW+f"[DEBUG] [WARNING] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
+        bot.reply_to(message, strings[language]["alrpending_msg"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+        return
+    subprocess.Popen(SHUTDOWN_PATH)
+    isPendingShutdown = True
+    pendingshutdowntype = strings[language]["shutdown"]
+    shtdwntime = get_time(shtdwndelay)
+    print("[DEBUG] user",message.from_user.id,"requested shutdown, shutting down at",shtdwntime,"...")
+    bot.reply_to(message, strings[language]["pendingshutdown_msg"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime),parse_mode="Markdown")
+    return
+
+def reboot_func(message):
+    # ts is needed in EVERY function that uses those values
+    global isPendingShutdown
+    global pendingshutdowntype
+    global shtdwntime
+    
+    if not authenticate(message.from_user.id,"reboot the RPC",COMMANDS_LKUP["reboot"]["admin"]):
+        return
+    if isPendingShutdown == True:
+        print(Fore.YELLOW+f"[DEBUG] [WARNING] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
+        bot.reply_to(message, strings[language]["alrpending_msg"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+        return
+    subprocess.Popen(REBOOT_PATH)
+    isPendingShutdown = True
+    pendingshutdowntype = strings[language]["reboot"]
+    shtdwntime = get_time(shtdwndelay)
+    print("[DEBUG] user",message.from_user.id,"requested shutdown, shutting down at",shtdwntime,"...")
+    bot.reply_to(message, strings[language]["pendingreboot_msg"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+    return
+
+def cancel_shutdown_func(message):
+    # ts is needed in EVERY function that uses those values
+    global isPendingShutdown
+    global pendingshutdowntype
+    global shtdwntime
+    global stopTimer
+    
+    if not authenticate(message.from_user.id,"cancel pending RPC/bot shutdown",COMMANDS_LKUP["cancelshutdown"]["admin"]):
+        return
+    if isPendingShutdown == False:
+        print(Fore.YELLOW+"[DEBUG] [WARNING] user",message.from_user.id,"tried cancelling a shutdown, but there isn't one pending")
+        bot.reply_to(message, strings[language]["shtdwnnotpending_msg"], parse_mode="Markdown")
+        return
+        
+    subprocess.Popen(CANCELSHUTDOWN_PATH)
+    if pendingshutdowntype == "stop":
+        stopTimer.cancel()
+    print("[DEBUG] user",message.from_user.id,"cancelled pending shutdown")
+    bot.reply_to(message,strings[language]["cnclpendingshutdown"].format(TYPE=pendingshutdowntype), parse_mode="Markdown")
+    isPendingShutdown = False
+    return
+
+def settings_func(message):
+    if not authenticate(message.from_user.id,"view current settings",COMMANDS_LKUP["settings"]["admin"]):
+        return
+    recOnStartIsOn=strings[language][recordOnStart]
+    bot.reply_to(message, strings[language]["settings_msg"].format(LANG=strings[language][language],HI=strings[language]["hi"],STARTKEY=startkey,STOPKEY=stopkey,KEYPRESSES=keyPresses,SHTDWNDELAY=shtdwndelay,RECONSTARTISON=recOnStartIsOn), parse_mode="Markdown")
+    return
+
+# --------- bind all commands so they work --------- #
+
+for cmd in COMMANDS: # for every command in vocabulary COMMANDS, do:
+    func = globals()[cmd["func"]] # find the function in "func" that corresponds to "cmd" in vocabulary
+    bot.message_handler(commands=[cmd["cmd"]])(func) # create a handler for the found command and bind it to its found function
+
+# ----- create development (hidden) commands ----- #
+@bot.message_handler(commands=['myid'])
+def my_id(message):
+    userid = message.from_user.id
+    bot.reply_to(message,f"UserID: `{userid}`",parse_mode="Markdown")
+
+@bot.message_handler(commands=['testBON'])
+def test_bot_online_notification(message):
+    if not authenticate(message.from_user.id,"test the BON"):
+            return
+    if testmode == False:
+        print(Fore.RED+"[DEBUG] [ERROR] this command cannot be used outside of testmode")
+        return
+    notify_online(True)
+
+@bot.message_handler(commands=['screenshit'])
+def schreenshit(message):
+    if not authenticate(message.from_user.id):
+        return
+    bot.reply_to(message, '"screenshit" 😭🙏🏿')
+    take_screenshot(message.chat.id)
+
+@bot.message_handler(commands=['badapple'])
+def bad_apple(message):
+    if not authenticate(message.from_user.id,"play bad apple"):
+        return
+    manage_macro("stop")
+    time.sleep(1)
+    vlc = subprocess.Popen(BADAPPLE_PATH)
+    record_video_ram(message.chat.id,210,"1000k")
+    time.sleep(3)
+    vlc.kill()
+
+@bot.message_handler(commands=['clr'])
+def clr_func(message):
+    bot.delete_my_commands(language_code="")
+
+@bot.message_handler(commands=['setlang'])
+def setlang(message):
+    global language
+    if not authenticate(message.from_user.id):
+        return
+    parts = message.text.split()
+    language = parts[1].lower()
+    bot.reply_to(message,f"Set language to {language}")
+
+@bot.message_handler(commands=['hi'])
+def hi(message):
+    replies = ['!!!!', '! :D', ' :3', ' ^_^', '', ' :]', ' ;3', '!! >_<', ' ^w^', '!! >w<', ' •ᴗ•']
+    append = random.choice(replies)
+    time.sleep(random.uniform(0.5,1.25))
+    bot.send_chat_action(message.chat.id, 'typing')
+    time.sleep(random.uniform(0.4,2.6))
+    bot.reply_to(message,strings[language]["hi"]+append)
+
+# ----- define locales ----- #
+# strings[language]["keyname"].format(valueplaceholder=value) -> "corresponding string"
+strings = {
+    # RUSSIAN
+    "ru": {
+        "hi": "привет!",
+        "ru": "Русский",
+        "en": "Английский",
+        "y": "да",
+        "n": "нет",
+        "stop": "остановка",
+        "shutdown": "выключение",
+        "reboot": "перезагрузка",
+        True: "вкл.",
+        False: "выкл.",
+        "unknown": "неизвестно",
+        "startedEXE_msg": "🔌 .exe макроса запущен!",
+        "sendingAltF4_msg": "Отправка Alt+F4...",
+        "sentAltF4_msg": "✅ Alt+F4 успешно отправлено!",
+        "startsent_vid_msg": "▶️ Клавиша старта отправлена, записываю видео...",
+        "startsent_novid_msg": "▶️ Клавиша старта отправлена!",
+        "stopsent_msg": "⏹ Клавиша стоп отправлена!",
+        "nokey_msg": "❌ Не указана клавиша.\nСинтаксис: /keyboard <клавиша>",
+        "invalidkey_msg": "❌ Неверно указано клавиша.\nСинтаксис: /keyboard <клавиша>\nКлавиши: a-z, 0-9, ctrl, alt, win, shift, space, enter",
+        "sentkey_msg": "✅ Клавиша {SENTKEY} успешно отправлена!",
+        "takingscrshot_msg": "Делаю скриншот...",
+        "recordingvid_msg": "Записываю видео...",
+        "chkping_msg": "Быстренько проверяю пинг с Telegram API...",
+        "scrshot_capt": "[{NOW}] Скриншот",
+        "vid_capt": "[{NOW}] Видео",
+        "BON_msg": "🟢 Бот онлайн!\nПК: *{HOSTNAME}*\nВремя: *{NOW}*",
+        "err403msg": "❌ У вас нет разрешения на управление ботом.\nЕсли вы считаете, что я ошибаюсь, пожалуйста, напишите админу.",
+        "notanadmin_msg": "❌ Недостаточно прав. Только администраторы могут использовать эту команду.",
+        "pendingstop_msg": "*🛑 Запланирована остановка бота через {SHTDWNDELAY} секунд!*\n(!) Бот перестанет работать, но компьютер останется включённым.\n\nОстановка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
+        "pendingshutdown_msg": "*💤 Запланировано выключение компьютера через {SHTDWNDELAY} секунд!!*\n(!!!) После выключения бот перестанет работать!\n\nВыключение в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
+        "pendingreboot_msg": "*🔄 Запланирована перезагрузка компьютера через {SHTDWNDELAY} секунд!*\n(!!) После перезагрузки бот может перестать работать\n\nПерезагрузка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
+        "shtdwnnotpending_msg": "Насколько мне известно, компьютер выключаться не собирался...",
+        "alrpending_msg": "*Ошибка*: уже планируется *{PENDINGSHUTDOWNTYPE}* в *{SHTDWNTIME}*.\nНеобходимо сначала отменить это действие: */cancelshutdown*",
+        "cnclpendingshutdown": "✅ Успешно отменено запланированное действие: {TYPE}.",
+        "welcome_msg":"\
+Здравствуйте, {NAME}! ✅ Бот активен и вы имеете права на управление.\n\
+Доступные команды:\n\
+/start - получить это сообщение\n\
+/launch - запустить .exe макроса\n\
+/alt_f4 - закрыть приложение в фокусе\n\
+/startmacro - послать старт\n\
+/stopmacro - послать стоп\n\
+/keyboard - послать клавишу на компьютер\n\
+/screenshot - сделать скриншот\n\
+/video - записать видео на 15 секунд\n\
+/stop - остановить бота\n\
+/shutdown - выключить компьютер\n\
+/reboot - перезагрузить компьютер\n\
+/cancelshutdown - отменить запланированное действие\n\
+/settings - просмотреть текущие настройки\n\
+/info - посмотреть разную информацию о боте\n\n\
+\
+Сделано @ImGreyCat с <3",
+        "info_msg": "\
+*ℹ️ Информация и статус*\n\n\
+\
+*🔑 Авторизация*\n\
+Ваше имя: *{NAME}*\n\
+Базовые права: *да*\n\
+Права администратора: *{ISADMIN}*\n\n\
+\
+*🖥 Компьютер*\n\
+Имя: *{HOSTNAME}*\n\
+Система: *{SYSTEM} {RELEASE} ({KERNELVER})*\n\
+Время: *{NOW}*\nПинг до Telegram API (RTT): *{PING} мс *\n\n\
+\
+*🤖 Бот*\n\
+Версия: *{VERSION} (сборка {BUILD})*\n\
+Время работы: *{UPTIME}*\n\
+Время на запуск: *{TOOKTOSTART} сек.*\n\
+🧪 Тестовый режим: *{TMSTATUS}*\
+",
+
+# ------------
+        
+        "settings_msg": "\
+*⚙️ Настройки бота*\n\
+Их можно изменить в файле конфигурации.\n\n\
+\
+🏳️ Язык: *{LANG} ({HI})*\n\
+▶️ Кнопка старт: *{STARTKEY}*\n\
+⏹ Кнопка стоп: *{STOPKEY}*\n\n\
+\
+> ⌨️ Кол-во нажатий старт/стоп: *{KEYPRESSES}*\n\
+Бот отправляет старт/стоп это кол-во раз.\n\n\
+\
+> ⏱ Задержка выключения (сек.): *{SHTDWNDELAY}*\n\
+Столько секунд бот будет ждать перед выключением/перезагрузкой.\n\n\
+\
+> 🎥 Запись при старте: *{RECONSTARTISON}*\n\
+Будет ли бот записывать видео при /startmacro?\
+"
+    
+    },
+
+    # ENGLISH
+    "en": {
+        "hi": "hi!",
+        "ru": "Russian",
+        "en": "English",
+        "y": "yes",
+        "n": "no",
+        "stop": "stop",
+        "shutdown": "shutdown",
+        "reboot": "reboot",
+        True: "on",
+        False: "off",
+        "unknown": "unknown",
+        "startedEXE_msg": "🔌 Started macro .exe!",
+        "sendingAltF4_msg": "Sending Alt+F4...",
+        "sentAltF4_msg": "✅ Sent Alt+F4 successfully!",
+        "startsent_vid_msg": "▶️ Start key sent, recording a video...",
+        "startsent_novid_msg": "▶️ Start key sent!",
+        "stopsent_msg": "⏹ Stop key sent!",
+        "nokey_msg": "❌ No key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
+        "invalidkey_msg": "❌ Invalid key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
+        "sentkey_msg": "✅ Sent key {SENTKEY} successfully!",
+        "takingscrshot_msg": "Taking a screenshot...",
+        "chkping_msg": "Pinging the Telegram API real quick...",
+        "scrshot_capt": "[{NOW}] Screenshot",
+        "vid_capt": "[{NOW}] Video",
+        "BON_msg": "🟢 Now online!\nPC: *{HOSTNAME}*\nTime: *{NOW}*",
+        "err403msg": "❌ You do not have permission to use the bot.\nIf you think I'm mistaken, please contact the admin.",
+        "notanadmin_msg": "❌ Insufficient permissions. Only admins can use this command.",
+        "pendingstop_msg": "*🛑 Bot stop scheduled in {SHTDWNDELAY} seconds!*\n(!) The bot will stop working, but the RPC will keep running.\n\nStopping at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "pendingshutdown_msg": "*💤 Computer shutdown scheduled in {SHTDWNDELAY} seconds!!*\n(!!!) The bot will stop working after shutdown!\n\nShutting down at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "pendingreboot_msg": "*🔄 Computer reboot scheduled in {SHTDWNDELAY} seconds!*\n(!!) The bot may stop working after reboot\n\nRebooting at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "shtdwnnotpending_msg": "As far as I can see, the computer doesn't have a scheduled shutdown...",
+        "alrpending_msg": "*Error*: there's already a *{PENDINGSHUTDOWNTYPE}* pending at *{SHTDWNTIME}*.\nTo schedule a shutdown, please cancel this one first: */cancelshutdown*",
+        "cnclpendingshutdown": "✅ Cancelled pending {TYPE} successfully.",
+        "welcome_msg":"null",
+        "info_msg": "\
+*ℹ️ Info and status*\n\n\
+\
+*🔑 Authorization*\n\
+Your name: *{NAME}*\n\
+Default permissions: *yes*\n\
+Admin permissions: *{ISADMIN}*\n\n\
+\
+*🖥 Computer*\n\
+Hostname: *{HOSTNAME}*\n\
+System: *{SYSTEM} {RELEASE} ({KERNELVER})*\n\
+Time: *{NOW}*\nPing to Telegram API (RTT): *{PING} ms*\n\n\
+\
+*🤖 Bot*\n\
+Version: *{VERSION} (build {BUILD})*\n\
+Uptime: *{UPTIME}*\n\
+Startup time: *{TOOKTOSTART} sec*\n\
+🧪 Testmode: *{TMSTATUS}*\
+",
+
+# ------------
+
+        
+        "settings_msg": "\
+*⚙️ Bot settings*\n\
+You can change these in the configuration file.\n\n\
+\
+🏳️ Language: *{LANG}: {HI}*\n\
+▶️ Start button: *{STARTKEY}*\n\
+⏹ Stop button: *{STOPKEY}*\n\n\
+\
+🡒 ⌨️ Start/stop button presses: *{KEYPRESSES}*\n\
+The bot sends start/stop this amount of times.\n\n\
+\
+🡒 ⏱ Shutdown delay (s.): *{SHTDWNDELAY}*\n\
+The bot will wait for this amount of seconds before shutdown.\n\n\
+\
+🡒 🎥 Record on start: *{RECONSTARTISON}*\n\
+Should the bot record a video on /startmacro?\
+"
+    }
+}
+
+# ------------------- start bot ------------------- #
+# ---- everything here will execute on startup ---- #
+notify_online()
+telebot.apihelper.READ_TIMEOUT = 900
+telebot.apihelper.CONNECT_TIMEOUT = 900
+print(f"[DEBUG] using locale {language}. {strings[language]["hi"]}")
+starttime = time.time() # saves the startup time to calculate uptime later when needed
+tookToStart = round(starttime-beginTime,2)
+print(f"Bot started successfully! (took {tookToStart} seconds)")
+bot.infinity_polling() # this makes the bot run even if theres an error somewhere
