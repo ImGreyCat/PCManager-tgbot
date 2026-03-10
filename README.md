@@ -1,5 +1,6 @@
 # PCManager-tgbot
 A Telegram bot for managing your computer and game macros remotely
+<img width="539" height="492" alt="funnyscreenshot" src="https://github.com/user-attachments/assets/65fc9f48-58e3-48f0-99f8-e854b1812a3a" />
 
 # Features
 - Setting up multiple users/admins
