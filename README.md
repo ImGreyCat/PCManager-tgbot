@@ -1,5 +1,5 @@
 # PCManager-tgbot
-A Telegram bot for managing your computer and game macros remotely\
+A Telegram bot for managing your computer and game macros remotely, built on pure spaghetti code by a beginner!\
 <img width="269" height="246" alt="funnyscreenshot" src="https://github.com/user-attachments/assets/65fc9f48-58e3-48f0-99f8-e854b1812a3a" />
 
 # Features
@@ -37,4 +37,3 @@ Make sure to install the built-in library as well.
  - [ ] Move to asynchronous 
  - [ ] Support for multiple macro .exes and launching them separately
  - [ ] De-spaghetti the code 
-
