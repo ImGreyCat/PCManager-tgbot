@@ -221,26 +221,6 @@ def record_video_ram(chat_id=None, length=videoLength, bitrate="4000k"):
     bot.send_chat_action(chat_id, 'upload_video')
     bot.send_video(chat_id, video_buffer,caption=strings[language]["vid_capt"].format(NOW=get_time()))
 
-# --------------------- Video recording (storage, deprecated) ---------------------- #
-# ----------------- only use this if the ram recording doesnt work ----------------- #
-def record_video_storage(filename="video.mp4"):
-    print("[DEBUG] starting recording with ffmpeg")
-    cmd = [
-        "ffmpeg",
-        "-y",
-        "-f", "gdigrab",
-        "-framerate", "10",
-        "-t", "15",
-        "-i", "desktop",
-        "-vf", "scale=1280:-1",
-        "-c:v", "libx264",
-        "-preset", "veryfast",
-        "-crf", "32",
-        filename
-    ]
-    subprocess.run(cmd)
-    return filename
-
 def manage_macro(action):
     count = keyPresses
     if action == "start":
