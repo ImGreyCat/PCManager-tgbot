@@ -69,6 +69,11 @@ ADMINS = {
 
 }
 
+# whether to use custom commands or not
+# if on, the bot will also accept commands set up in the custom.py file
+# please note that issues with custom commands ON will not be accepted, because they may cause stability issues and stuff
+useCustomCommands = False
+# default: False
 
 # whether to send a message to all users when the bot starts
 # if on, will prevent the bot from starting if at least one of the users didn't send any command/message to the bot before
