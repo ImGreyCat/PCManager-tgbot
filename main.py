@@ -55,7 +55,6 @@ BADAPPLE_PATH = r'C:\Program Files (x86)\vlc-3.0.23\vlc.exe C:\badapple.mp4'
 isPendingShutdown = False
 pendingshutdowntype = "none"
 shtdwntime= "none"
-now = "undefined"
 
 # add everybody from ADMINS to USERS
 USERS.update(ADMINS)
@@ -184,7 +183,6 @@ def take_screenshot(chat_id):
 # ---------- records a video into ram ------------- #
 def record_video_ram(chat_id=None, length=videoLength, bitrate="4000k"):
     now = get_time()
-    video_buffer = None
     print(f"[DEBUG] [{now}] video requested for chat {chat_id}, recording now...")
     cmd = [
         "ffmpeg",
@@ -252,7 +250,7 @@ def get_time(offset=0):
 # ------------------- helper functions -------------------
 
 # authenticates user, also gets their admin status
-def authenticate(user_id, target="do unknown action",adminOnly=False,fail=False):
+def authenticate(user_id, target="do unknown action", adminOnly=False):
     isauser=False
     isanadmin=False
     if user_id in USERS:
@@ -286,7 +284,7 @@ def notify_online(force=False):
         now = get_time()
         for uid in USERS:
             print("[DEBUG] sending BON to",uid)
-            bot.send_message(uid,strings[language]["BON_msg"].format(HOSTNAME=hostname,NOW=get_time()),parse_mode="Markdown")
+            bot.send_message(uid,strings[language]["BON_msg"].format(HOSTNAME=hostname,NOW=now),parse_mode="Markdown")
     return
 
 def get_uptime():
@@ -359,16 +357,16 @@ def keyboard_func(message):
     parts = message.text.split()
     try:
         keyToSend = parts[1].lower()
-    except IndexError as ie:
+    except IndexError:
         pass
         bot.reply_to(message,strings[language]["nokey_msg"])
         print(Fore.YELLOW+f"[WARNING] key to send wasn't specified")
         return
     
-    if keyToSend != None:
+    if keyToSend is not None:
         try:
             keyboard.send(keyToSend)
-        except ValueError as ve:
+        except ValueError:
             pass
             bot.reply_to(message,strings[language]["invalidkey_msg"])
             print(Fore.YELLOW+f"[WARNING] invalid key specified")
@@ -537,9 +535,10 @@ def bad_apple(message):
     time.sleep(3)
     vlc.kill()
 
-@bot.message_handler(commands=['clr'])
+@bot.message_handler(commands=['clear_commands'])
 def clr_func(message):
     bot.delete_my_commands(language_code="")
+    bot.reply_to(message, "Cleared commands")
 
 @bot.message_handler(commands=['setlang'])
 def setlang(message):
@@ -747,4 +746,4 @@ print(f"[DEBUG] using locale {language}. {strings[language]["hi"]}")
 starttime = time.time() # saves the startup time to calculate uptime later when needed
 tookToStart = round(starttime-beginTime,2)
 print(f"Bot started successfully! (took {tookToStart} seconds)")
-bot.infinity_polling() # this makes the bot run even if theres an error somewhere
+bot.infinity_polling() # this makes the bot run even if there's an error somewhere
