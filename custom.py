@@ -2,10 +2,12 @@
 # Create your custom features here! You'll be able to run any of these in your bot.
 # That's only for advanced coders, so only create these if you know what you're doing.
 
+from main import * # import the main file so you can use everything from it in an IDE
+
 # Useful helper functions:
 # get_time(offset (int, in seconds) - outputs the time in HH:mm:ss (HH:mm:ss AM/PM for 12-hour time) + the offset in seconds (default 0)
 # take_screenshot(chat_id)
-# record_video_ram(chat_id, length (int, in seconds), bitrate (str, xxxxk))
+# record_video_ram(chat_id, length (int, in seconds), bitrate (str, ####k))
 # authenticate(user_id, target (str), adminOnly)
 # is_admin(user_id) - returns "y" or "n"
 # delete_msg(message)
@@ -32,6 +34,6 @@ def custom_cmd_func(message):
     bot.reply_to(message,"hi there!")
 
 def custom_cmd2_func(message):
-  if not authenticate(message.from_user.id,"run the second custom command",COMMANDS_LKUP["custom2"]["admin"]):
-        return
+    if not authenticate(message.from_user.id,"run the second custom command",COMMANDS_LKUP["custom2"]["admin"]):
+      return
     bot.reply_to(message,"omg that's the second custom command")
