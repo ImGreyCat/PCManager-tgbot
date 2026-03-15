@@ -10,21 +10,35 @@ A Telegram bot for managing your computer and game macros remotely, built on pur
 - Taking screenshots and recording videos from your screen
 - Shutting down or rebooting the PC
 
-# Setup
-## Windows
-1. Install ffmpeg
-> **Download the build from gyan.dev (personally recommend this)**\
+# Quick Setup
+1. **Download the release**\
+You can get the latest release [here](https://github.com/ImGreyCat/PCManager-tgbot-dev/releases/latest).
+2. **Extract the files**
+3. **Set up your config**
+4. **You're ready to go!**
+
+# Manual Setup
+You can download the rolling version of the code to try new features before releases! Here's how to do it:
+
+1. **Download the source code**\
+Click the green Code button, then download ZIP to download the code.
+   
+3. **Install ffmpeg**
+> **For Windows: download the build from gyan.dev (personally recommend this)**\
 > [Download this 7z archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) and extract it to C:\ffmpeg
 
 > **Add ffmpeg to PATH**\
 > Open Search, find and open "Edit the system environment variables", then add C:\ffmpeg\bin to the system Path variable.
 
-2. Install Python
+> **For Linux/macOS:**\
+> Install ffmpeg with your system's package manager.
+
+3. **Install Python**
 
 Visit https://www.python.org/downloads/windows/ to download and install Python.\
 Make sure to install the built-in library as well. 
 
-3. Install requirements
+4. Install requirements
 > **Automatic installation with pip**\
 > Launch the [requirements.py](requirements.py) file to automatically install all requirements with pip.
 
@@ -33,7 +47,7 @@ Make sure to install the built-in library as well.
 
 # To do
 
- - [ ] Add custom commands support
+ - [X] Add custom commands support
  - [ ] Move to asynchronous 
  - [ ] Support for multiple macro .exes and launching them separately
  - [ ] De-spaghetti the code 
