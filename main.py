@@ -34,12 +34,20 @@ except ImportError as error:
     input("Press Enter to exit...")
     raise SystemExit
 
+CUSTOM_CMDS=[]
 init(autoreset=True)
 
-# ======== version setup ========
+if useCustomCommands is True:
+    print("[DEVELOPER] Importing custom commands")
+    try:
+        from custom import *
+    except Exception as e:
+        print(Fore.RED+f"[ERROR] Failed to import custom commands ({e})!")
+        CUSTOM_CMDS=[]
 
+# ======== version setup ========
 version = "rolling-developer"
-build = "654"
+build = "682"
 hostname = socket.gethostname()
 system = platform.system()
 release = platform.release()
@@ -61,9 +69,9 @@ USERS.update(ADMINS)
 
 # setup the testmode changes
 if testmode == True:
+    bypassSystemCheck = True
     print(Fore.YELLOW+"[WARNING] testmode is on. see the config file to learn more about what it does")
     MACRO_PATH = r"C:\Windows\System32\calc.exe"
-    TOKEN = "8264637187:AAEhJ01WZUf69vD1-vqslcVcUz_eOrVTs28" # test bot token
     shtdwndelay = shtdwndelay*2
     SHUTDOWN_PATH = rf"C:\Windows\System32\shutdown.exe -s -t {shtdwndelay}"
     REBOOT_PATH = rf"C:\Windows\System32\shutdown.exe -r -t {shtdwndelay}"
@@ -156,6 +164,7 @@ COMMANDS = [
      "admin": False}
 ]
 
+COMMANDS.extend(CUSTOM_CMDS)
 COMMANDS_LKUP = {c["cmd"]: c for c in COMMANDS}
 
 # -------------------- initialize bot -------------------- #
@@ -535,10 +544,13 @@ def bad_apple(message):
     time.sleep(3)
     vlc.kill()
 
-@bot.message_handler(commands=['clear_commands'])
+@bot.message_handler(commands=['upd_cmds'])
 def clr_func(message):
+    if not authenticate(message.from_user.id):
+        return
     bot.delete_my_commands(language_code="")
-    bot.reply_to(message, "Cleared commands")
+    bot.set_my_commands([telebot.types.BotCommand(c["cmd"], c["desc"]) for c in COMMANDS])
+    bot.reply_to(message,strings[language]["updatedcmds_msg"])
 
 @bot.message_handler(commands=['setlang'])
 def setlang(message):
@@ -654,7 +666,8 @@ strings = {
 \
 > 🎥 Запись при старте: *{RECONSTARTISON}*\n\
 Будет ли бот записывать видео при /startmacro?\
-"
+",
+        "updatedcmds_msg":"Список команд обновлён успешно.\nВнимание! Вы можете не увидеть изменения, пока полностью не перезапустите Telegram."
     
     },
 
@@ -733,7 +746,8 @@ The bot will wait for this amount of seconds before shutdown.\n\n\
 \
 🡒 🎥 Record on start: *{RECONSTARTISON}*\n\
 Should the bot record a video on /startmacro?\
-"
+",
+        "updatedcmds_msg": "Commands succesfully refreshed.\nPlease note that you might need to fully restart Telegram for the changes to show!",
     }
 }
 
