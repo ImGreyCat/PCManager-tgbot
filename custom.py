@@ -10,6 +10,8 @@
 # is_admin(user_id) - returns "y" or "n"
 # delete_msg(message)
 
+# Note! All your custom commands will be added to the bot's menu. To clear and update it, run /upd_cmds.
+
 # command list
 
 CUSTOM_CMDS = [
