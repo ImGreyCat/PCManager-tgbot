@@ -2,8 +2,6 @@
 # Create your custom features here! You'll be able to run any of these in your bot.
 # That's only for advanced coders, so only create these if you know what you're doing.
 
-from main import * # import the main file so you can use everything from it in an IDE
-
 # Useful helper functions:
 # get_time(offset (int, in seconds) - outputs the time in HH:mm:ss (HH:mm:ss AM/PM for 12-hour time) + the offset in seconds (default 0)
 # take_screenshot(chat_id)
