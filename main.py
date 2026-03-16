@@ -69,6 +69,7 @@ USERS.update(ADMINS)
 
 # setup the testmode changes
 if testmode == True:
+    from devSettings import TOKEN
     bypassSystemCheck = True
     print(Fore.YELLOW+"[WARNING] testmode is on. see the config file to learn more about what it does")
     MACRO_PATH = r"C:\Windows\System32\calc.exe"
@@ -106,6 +107,11 @@ COMMANDS = [
     {"cmd": "alt_f4",
      "desc": "[✨ Новое] Закрыть приложение в фокусе",
      "func": "closeapp_func",
+     "admin": True},
+
+    {"cmd": "minimize_all",
+     "desc": "[✨ Новое] Свернуть все приложения",
+     "func": "minimize_all_func",
      "admin": True},
     
     {"cmd": "startmacro",
@@ -333,13 +339,24 @@ def launchpad_func(message):
 def closeapp_func(message):
     if not authenticate(message.from_user.id,"close the app in the front",COMMANDS_LKUP["alt_f4"]["admin"]):
         return
-    sent = bot.send_message(message.chat.id,"Отправляю Alt+F4...")
+    sent = bot.send_message(message.chat.id,"Закрываю приложение спереди...")
     keyboard.press('alt')
     keyboard.press('f4')
     keyboard.release('f4')
     keyboard.release('alt')
     delete_msg(sent)
-    bot.reply_to(message,"Alt+F4 успешно отправлено!") 
+    bot.reply_to(message,strings[language]["done"])
+
+def minimize_all_func(message):
+    if not authenticate(message.from_user.id,"minimize all apps",COMMANDS_LKUP["minimize_all"]["admin"]):
+        return
+    sent = bot.send_message(message.chat.id,"Отправляю Win+D...")
+    keyboard.send("win")
+    keyboard.press('d')
+    keyboard.release('win')
+    keyboard.release('d')
+    delete_msg(sent)
+    bot.reply_to(message,strings[language]["done"])
 
 def startmacro_func(message):
     if not authenticate(message.from_user.id,"send the start key",COMMANDS_LKUP["startmacro"]["admin"]):
@@ -586,6 +603,7 @@ strings = {
         True: "вкл.",
         False: "выкл.",
         "unknown": "неизвестно",
+        "done": "Готово!",
         "startedEXE_msg": "🔌 .exe макроса запущен!",
         "sendingAltF4_msg": "Отправка Alt+F4...",
         "sentAltF4_msg": "✅ Alt+F4 успешно отправлено!",
@@ -684,6 +702,7 @@ strings = {
         True: "on",
         False: "off",
         "unknown": "unknown",
+        "done": "Done!",
         "startedEXE_msg": "🔌 Started macro .exe!",
         "sendingAltF4_msg": "Sending Alt+F4...",
         "sentAltF4_msg": "✅ Sent Alt+F4 successfully!",
