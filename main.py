@@ -10,13 +10,6 @@ except Exception as e:
 else:
     print("Imported config")
 
-try:
-    from locales import strings # importing custom locales
-except ImportError:
-    pass
-else:
-    print(f"[DEVELOPER] Imported custom languages: {', '.join(strings)}")
-
 try: # import modules
     import telebot
     import keyboard
@@ -44,6 +37,17 @@ if useCustomCommands is True:
     except Exception as e:
         print(Fore.RED+f"[ERROR] Failed to import custom commands ({e})!")
         CUSTOM_CMDS=[]
+    else:
+        print(Fore.CYAN+"[DEVELOPER] Imported custom commands")
+
+try:
+    from locales import strings # importing custom locales
+except ImportError:
+    pass
+else:
+    if not strings:
+        print(Fore.CYAN+"[DEVELOPER] No custom languages found")
+    print(Fore.CYAN+f"[DEVELOPER] Imported custom languages: {', '.join(strings)}")
 
 # ======== version setup ========
 version = "rolling-developer"
