@@ -1,3 +1,18 @@
+# Configuration file
+
+# ========== Connection ==========
+
+# the bot token to connect to Telegram API
+# to create a bot, use @BotFather on Telegram and follow its instructions
+TOKEN = ""
+
+# whether to send a message to all users when the bot starts
+# if on, will prevent the bot from starting if at least one of the users didn't send any command/message to the bot before
+bonEnabled = True
+# default: True
+
+# ========== Regional ==========
+
 # language to use
 # available languages are en (english) and ru (russian)
 language = ""
@@ -6,48 +21,24 @@ language = ""
 use24HourTime = True
 # default: True
 
-# the bot token to connect to Telegram API
-# to create a bot, use @BotFather on Telegram and follow its instructions
-TOKEN = ""
-
-# start and stop keys
-startkey = ""
-stopkey = ""
-
-# how many times to send keys to the computer on /startmacro and /stopmacro.
-# there will always be a 1 second delay between presses to avoid lag
-keyPresses = 1
-# default: 1
-# it's not recommended to increase this unless your macro often doesn't start/stop from the first key press
+# ========== Remote computer ==========
 
 # how long the recorded videos will be in seconds
 videoLength = 15
 # default: 15
 
-# whether to record a video when /startmacro is ran or not
-recordOnStart = True
-# default: True
-
-# system check bypass toggle
-# setting this to True will disable the check for the OS of your PC
-# the bot is generally built to work just on windows, so it's not recommended to use linux/macos
-bypassSystemCheck = False
-# default and recommended: False
-
-# how long to wait in seconds before stopping the bot or shutting down/rebooting the RPC
+# how long to wait in seconds before stopping the bot or shutting down/rebooting
 shtdwndelay=60
 # default: 60
 # 0 = instant
 
-# path to your preferred macro's .exe here
-MACRO_PATH = r""
+# ========== User setup ==========
 
-# ========== user setup ==========
 # the following users will be able to access the bot and its commands
 # admins will have all permissions of a regular user and will also be able to run admin-only commands
 # to add somebody here, put in their telegram user id followed by a colon and their name in brackets, then a commma 
-# note! the bot will refer to the users using the name you put in, not their telegram name
-# note 2! don't add a user both to the users list and the admins list, pick just one
+# [!] note 1: the bot will refer to the users using the name you put in, not their telegram name
+# [!] note 2: don't add a user both to the users list and the admins list, pick just one
 # it will also send all of them the Bot Online notification if set up to do so
 #
 # here's an example of a user setup with 2 users and 1 admin:
@@ -64,10 +55,30 @@ USERS = {
 
 }
 
-
 ADMINS = {
 
 }
+
+# ========== Macro ==========
+
+# path to your preferred macro's .exe here (C:\Users\User\...)
+MACRO_PATH = r""
+
+# start and stop keys
+startkey = ""
+stopkey = ""
+
+# how many times to send keys to the computer on /startmacro and /stopmacro.
+# there will always be a 1-second delay between presses to avoid lag
+keyPresses = 1
+# default: 1
+# it's not recommended to increase this unless your macro often doesn't start/stop from the first key press
+
+# should the bot record a video when the macro is started?
+recordOnStart = True
+# default: True
+
+# ========== Developer ==========
 
 # whether to use custom commands or not
 # if on, the bot will also accept commands set up in the custom.py file
@@ -75,10 +86,11 @@ ADMINS = {
 useCustomCommands = False
 # default: False
 
-# whether to send a message to all users when the bot starts
-# if on, will prevent the bot from starting if at least one of the users didn't send any command/message to the bot before
-bonEnabled = True
-# default: True
+# system check bypass toggle
+# setting this to True will disable the check for the OS of your PC
+# the bot is generally built to work just on Windows, so it's not recommended to use linux/macOS
+bypassSystemCheck = False
+# default and recommended: False
 
 # test mode switch
 # if True, the following will change:
