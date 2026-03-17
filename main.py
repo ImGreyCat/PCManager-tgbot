@@ -1,3 +1,5 @@
+from telebot import apihelper
+
 print("Starting up...")
 import time
 beginTime = time.time()
@@ -9,6 +11,11 @@ except Exception as e:
     raise SystemExit
 else:
     print("Imported config")
+
+try: # import dev copy of config file
+    from devSettings import *
+except:
+    pass
 
 try: # import modules
     import telebot
@@ -38,7 +45,7 @@ if useCustomCommands is True:
         print(Fore.RED+f"[ERROR] Failed to import custom commands ({e})!")
         CUSTOM_CMDS=[]
     else:
-        print(Fore.CYAN+"[DEVELOPER] Imported custom commands")
+        print(Fore.BLUE+"[DEVELOPER] Imported custom commands")
 
 try:
     from locales import strings # importing custom locales
@@ -46,8 +53,8 @@ except ImportError:
     pass
 else:
     if not strings:
-        print(Fore.CYAN+"[DEVELOPER] No custom languages found")
-    print(Fore.CYAN+f"[DEVELOPER] Imported custom languages: {', '.join(strings)}")
+        print(Fore.BLUE+"[DEVELOPER] No custom languages found")
+    print(Fore.BLUE+f"[DEVELOPER] Imported custom languages: {', '.join(strings)}")
 
 # ======== version setup ========
 version = "rolling-developer"
@@ -72,7 +79,6 @@ USERS.update(ADMINS)
 
 # setup the testmode changes
 if testmode == True:
-    from devSettings import TOKEN
     bypassSystemCheck = True
     print(Fore.YELLOW+"[WARNING] testmode is on. see the config file to learn more about what it does")
     MACRO_PATH = r"C:\Windows\System32\calc.exe"
@@ -177,8 +183,34 @@ COMMANDS.extend(CUSTOM_CMDS)
 COMMANDS_LKUP = {c["cmd"]: c for c in COMMANDS}
 
 # -------------------- initialize bot -------------------- #
-print("Connecting to Telegram Bot API..")
-bot = telebot.TeleBot(TOKEN)
+if useProxy is True:
+    print("Connecting to Telegram Bot API using a proxy...")
+    if proxyUsername and proxyPassword:
+        # Authenticated format: protocol://user:pass@ip:port
+        proxy_url = f"{proxyType}://{proxyUsername}:{proxyPassword}@{proxyIP}:{proxyPort}"
+    else:
+        # Standard format: protocol://ip:port
+        proxy_url = f"{proxyType}://{proxyIP}:{proxyPort}"
+    apihelper.proxy = {'http': proxy_url, 'https': proxy_url}
+    bot = telebot.TeleBot(TOKEN)
+    try:
+        me = bot.get_me()
+        print(Fore.CYAN+f"Proxy connection successful as @{me.username}")
+    except Exception as e:
+        print(Fore.RED+f"[ERROR] Proxy connection failed: {e}")
+        input("The bot can't continue running. Press Enter to exit...")
+        raise SystemExit
+else:
+    print("Connecting to Telegram...")
+    bot = telebot.TeleBot(TOKEN)
+    try:
+        me = bot.get_me()
+        print(f"Connected as @{me.username}")
+    except Exception as e:
+        print(Fore.RED+f"[ERROR] Failed to connect to Telegram: {e}")
+        input("The bot can't continue running. Press Enter to exit...")
+        raise SystemExit
+
 print("Syncing command list...")
 bot.set_my_commands([telebot.types.BotCommand(c["cmd"], c["desc"]) for c in COMMANDS]) # creates command list for every cmd
 print("Synced!")
@@ -771,5 +803,5 @@ telebot.apihelper.CONNECT_TIMEOUT = 900
 print(f"[DEBUG] using locale {language}. {strings[language]["hi"]}")
 starttime = time.time() # saves the startup time to calculate uptime later when needed
 tookToStart = round(starttime-beginTime,2)
-print(f"Bot started successfully! (took {tookToStart} seconds)")
+print(Fore.GREEN+f"Bot started successfully! (took {tookToStart} seconds)")
 bot.infinity_polling() # this makes the bot run even if there's an error somewhere
