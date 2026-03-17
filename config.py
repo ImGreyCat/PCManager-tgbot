@@ -11,6 +11,18 @@ TOKEN = ""
 bonEnabled = True
 # default: True
 
+# should the bot connect using a proxy?
+useProxy = False
+# default = False
+
+# proxy settings
+proxyType = "" # options: "socks5", "http", "https"
+proxyIP = ""
+proxyPort = 0
+proxyUsername = ""
+proxyPassword = ""
+# set both username and password to "" if proxy doesn't require authentication
+
 # ========== Regional ==========
 
 # language to use
