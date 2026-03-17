@@ -2,3 +2,4 @@ pyTelegramBotAPI
 keyboard
 Pillow
 colorama
+requests[socks]
