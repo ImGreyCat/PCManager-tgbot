@@ -61,7 +61,6 @@ kernelver = platform.version()
 SHUTDOWN_PATH = rf"C:\Windows\System32\shutdown.exe -s -t {shtdwndelay}"
 REBOOT_PATH = rf"C:\Windows\System32\shutdown.exe -r -t {shtdwndelay}"
 CANCELSHUTDOWN_PATH = r"C:\Windows\System32\shutdown.exe -a"
-BADAPPLE_PATH = r'C:\Program Files (x86)\vlc-3.0.23\vlc.exe C:\badapple.mp4'
 
 # preset some values here to avoid errors
 isPendingShutdown = False
@@ -343,13 +342,13 @@ def launchpad_func(message):
 def closeapp_func(message):
     if not authenticate(message.from_user.id,"close the app in the front",COMMANDS_LKUP["alt_f4"]["admin"]):
         return
-    sent = bot.send_message(message.chat.id,"Закрываю приложение спереди...")
+    sent = bot.send_message(message.chat.id,strings[language]["sendingAltF4_msg"])
     keyboard.press('alt')
     keyboard.press('f4')
     keyboard.release('f4')
     keyboard.release('alt')
     delete_msg(sent)
-    bot.reply_to(message,strings[language]["done"])
+    bot.reply_to(message,strings[language]["sentAltF4_Msg"])
 
 def minimize_all_func(message):
     if not authenticate(message.from_user.id,"minimize all apps",COMMANDS_LKUP["minimize_all"]["admin"]):
@@ -554,17 +553,6 @@ def schreenshit(message):
     bot.reply_to(message, '"screenshit" 😭🙏🏿')
     take_screenshot(message.chat.id)
 
-@bot.message_handler(commands=['badapple'])
-def bad_apple(message):
-    if not authenticate(message.from_user.id,"play bad apple"):
-        return
-    manage_macro("stop")
-    time.sleep(1)
-    vlc = subprocess.Popen(BADAPPLE_PATH)
-    record_video_ram(message.chat.id,210,"1000k")
-    time.sleep(3)
-    vlc.kill()
-
 @bot.message_handler(commands=['upd_cmds'])
 def clr_func(message):
     if not authenticate(message.from_user.id):
@@ -609,8 +597,9 @@ strings = {
         "unknown": "неизвестно",
         "done": "Готово!",
         "startedEXE_msg": "🔌 .exe макроса запущен!",
-        "sendingAltF4_msg": "Отправка Alt+F4...",
+        "sendingAltF4_msg": "Закрываю приложение спереди...",
         "sentAltF4_msg": "✅ Alt+F4 успешно отправлено!",
+        "minimizingAll_msg": "Сворачиваю все приложения...",
         "startsent_vid_msg": "▶️ Клавиша старта отправлена, записываю видео...",
         "startsent_novid_msg": "▶️ Клавиша старта отправлена!",
         "stopsent_msg": "⏹ Клавиша стоп отправлена!",
@@ -708,7 +697,7 @@ strings = {
         "unknown": "unknown",
         "done": "Done!",
         "startedEXE_msg": "🔌 Started macro .exe!",
-        "sendingAltF4_msg": "Sending Alt+F4...",
+        "sendingAltF4_msg": "Closing focused app...",
         "sentAltF4_msg": "✅ Sent Alt+F4 successfully!",
         "startsent_vid_msg": "▶️ Start key sent, recording a video...",
         "startsent_novid_msg": "▶️ Start key sent!",
