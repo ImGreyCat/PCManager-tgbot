@@ -1,22 +1,21 @@
-from telebot import apihelper
-
 print("Starting up...")
 import time
 beginTime = time.time()
+
+print("Importing config...")
 try: # import config
     from config import *
 except Exception as e:
     print("[ERROR] Cannot start: failed to import config! Please check it for any errors. (",e,")")
     input("Press Enter to exit...")
     raise SystemExit
-else:
-    print("Imported config")
 
 try: # import dev copy of config file
     from devSettings import *
 except:
     pass
 
+print("Importing modules...")
 try: # import modules
     import telebot
     import keyboard
@@ -88,12 +87,12 @@ if testmode == True:
     REBOOT_PATH = rf"C:\Windows\System32\shutdown.exe -r -t {shtdwndelay}"
     
 if not system == "Windows" and bypassSystemCheck == False: # check the os
-    print(Fore.RED + f"[ERROR] cannot continue on your os: {system}. if you're using windows or you know what you're doing, see config file")
+    print(Fore.RED + f"[ERROR] Cannot continue on your OS: {system}. To bypass this, set bypassSystemCheck to True in the config file.")
     input("Press Enter to exit...")
     raise SystemExit
-# here we check if the userlist is empty and if it is we start in emergency mode to make adding users easier
-if not USERS:
-    print(Fore.RED + "[ERROR] cannot continue running normally without users! please add at least one (see config file for instructions)")
+
+if not USERS: # here we check if the userlist is empty and if it is we start in emergency mode to make adding users easier
+    print(Fore.RED + "[ERROR] Cannot start normally without users! Please add at least one user or admin (see config file for instructions)")
     print("Connecting to Telegram Bot API and starting in emergency mode. Only /myid will be available.")
     bot = telebot.TeleBot(TOKEN)
     @bot.message_handler(commands=['myid'])
@@ -226,16 +225,16 @@ COMMANDS.extend(CUSTOM_CMDS)
 COMMANDS_LKUP = {c["cmd"]: c for c in COMMANDS}
 
 # -------------------- initialize bot -------------------- #
+bot = telebot.TeleBot(TOKEN)
 if useProxy is True:
-    print("Connecting to Telegram Bot API using a proxy...")
+    print("Connecting to Telegram through proxy...")
     if proxyUsername and proxyPassword:
         # Authenticated format: protocol://user:pass@ip:port
         proxy_url = f"{proxyType}://{proxyUsername}:{proxyPassword}@{proxyIP}:{proxyPort}"
     else:
         # Standard format: protocol://ip:port
         proxy_url = f"{proxyType}://{proxyIP}:{proxyPort}"
-    apihelper.proxy = {'http': proxy_url, 'https': proxy_url}
-    bot = telebot.TeleBot(TOKEN)
+    telebot.apihelper.proxy = {'http': proxy_url, 'https': proxy_url}
     try:
         me = bot.get_me()
         print(Fore.CYAN+f"Proxy connection successful as @{me.username}")
@@ -245,7 +244,6 @@ if useProxy is True:
         raise SystemExit
 else:
     print("Connecting to Telegram...")
-    bot = telebot.TeleBot(TOKEN)
     try:
         me = bot.get_me()
         print(f"Connected as @{me.username}")
@@ -262,14 +260,11 @@ print("Synced!")
 
 # ---------- Screenshot ---------
 def take_screenshot(chat_id):
-    now = get_time()
-    print(f"[DEBUG] [{now}] taking screenshot")
     screenshot = ImageGrab.grab()
     bio = io.BytesIO()
     bio.name = "screenshot.png"
     screenshot.save(bio, "PNG")
     bio.seek(0)
-    print("[DEBUG]",now,"sending screenshot to chat",chat_id) 
     bot.send_photo(chat_id, bio, caption=strings[language]["scrshot_capt"].format(NOW=get_time())) # sends the taken screenshot right away
 
 # ------------ Video recording (RAM) -------------- #
@@ -324,9 +319,9 @@ def manage_macro(action):
     for i in range(count):
         sentTimes = i+1
         keyboard.send(key)
-        print(f"[DEBUG] sent {key} ({sentTimes}/{count})")
+        print(f"Sent {key} ({sentTimes}/{count})")
         time.sleep(1)
-    print("[DEBUG] finished sending!")
+    print("Finished sending")
     return
 
 # returns current time like 12:34:56 with the offset in seconds
@@ -371,12 +366,11 @@ def is_admin(user_id):
 
 def notify_online(force=False):
     if bonEnabled == False and force!=True:
-        print("[DEBUG] BON is disabled, not sending")
         return
     if not testmode == True or force==True: # ensures that testmode is off
         now = get_time()
         for uid in USERS:
-            print("[DEBUG] sending BON to",uid)
+            print(f"Sending BON to {uid}")
             bot.send_message(uid,strings[language]["BON_msg"].format(HOSTNAME=hostname,NOW=now),parse_mode="Markdown")
     return
 
@@ -394,7 +388,6 @@ def delete_msg(message): # deletes the message passed to the function
 def stop_bot():
     bot.stop_polling()
     time.sleep(3)
-    print("[DEBUG] bot stopped")
     input("Bot stopped, press Enter to exit...")
     raise SystemExit
 
@@ -464,7 +457,7 @@ def keyboard_func(message):
     except IndexError:
         pass
         bot.reply_to(message,strings[language]["nokey_msg"])
-        print(Fore.YELLOW+f"[WARNING] key to send wasn't specified")
+        print(Fore.YELLOW+f"[WARNING] Key not specified")
         return
     
     if keyToSend is not None:
@@ -473,7 +466,7 @@ def keyboard_func(message):
         except ValueError:
             pass
             bot.reply_to(message,strings[language]["invalidkey_msg"])
-            print(Fore.YELLOW+f"[WARNING] invalid key specified")
+            print(Fore.YELLOW+f"[WARNING] Invalid key specified")
             return
         bot.reply_to(message,strings[language]["sentkey_msg"].format(SENTKEY=keyToSend))
 
@@ -578,7 +571,7 @@ def cancel_shutdown_func(message):
     if not authenticate(message.from_user.id,"cancel pending RPC/bot shutdown",COMMANDS_LKUP["cancelshutdown"]["admin"]):
         return
     if isPendingShutdown == False:
-        print(Fore.YELLOW+"[DEBUG] [WARNING] user",message.from_user.id,"tried cancelling a shutdown, but there isn't one pending")
+        print(Fore.YELLOW+f"[WARNING] {message.from_user.id} tried cancelling a shutdown, but there isn't one pending")
         bot.reply_to(message, strings[language]["shtdwnnotpending_msg"], parse_mode="Markdown")
         return
         
@@ -614,7 +607,7 @@ def test_bot_online_notification(message):
     if not authenticate(message.from_user.id,"test the BON"):
             return
     if testmode == False:
-        print(Fore.RED+"[DEBUG] [ERROR] this command cannot be used outside of testmode")
+        print(Fore.RED+"[ERROR] This command cannot be used outside of testmode")
         return
     notify_online(True)
 
@@ -838,8 +831,8 @@ Should the bot record a video on /startmacro?\
 # ------------------- start bot ------------------- #
 # ---- everything here will execute on startup ---- #
 notify_online()
-telebot.apihelper.READ_TIMEOUT = 900
-telebot.apihelper.CONNECT_TIMEOUT = 900
+telebot.apihelper.READ_TIMEOUT = 60
+telebot.apihelper.CONNECT_TIMEOUT = 60
 starttime = time.time() # saves the startup time to calculate uptime later when needed
 tookToStart = round(starttime-beginTime,2)
 print(Fore.GREEN+f"Bot started successfully! (took {tookToStart} seconds)")
