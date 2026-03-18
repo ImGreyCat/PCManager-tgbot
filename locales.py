@@ -18,6 +18,8 @@ strings = {
         "hi": "",
         "ru": "",
         "en": "",
+        "y": "", # put lowercase "yes" in your language here
+        "n": "", # same but with "no"
         "other": "", # put your language's native name here (example: "日本語" [Japanese])
         "stop": "",
         "shutdown": "",
@@ -25,10 +27,16 @@ strings = {
         True: "",
         False: "",
         "unknown": "",
+        "done": "",
         "startedEXE_msg": "",
+        "sendingAltF4_msg": "",
+        "sentAltF4_msg": "",
         "startsent_vid_msg": "",
         "startsent_novid_msg": "",
         "stopsent_msg": "",
+        "nokey_msg": "",
+        "invalidkey_msg": "",
+        "sentkey_msg": "",
         "takingscrshot_msg": "",
         "chkping_msg": "",
         "scrshot_capt": "{NOW}", # {NOW}: current time (HH:MM:SS)
