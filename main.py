@@ -48,7 +48,8 @@ if useCustomCommands is True:
         print(Fore.BLUE+"[DEVELOPER] Imported custom commands")
 
 try:
-    from locales import strings # importing custom locales
+    from locales import strings
+    from locales import CMD_DESCRIPTIONS as customCMD_DESCRIPTIONS # importing custom locales
 except ImportError:
     pass
 else:
@@ -102,9 +103,48 @@ if not USERS:
     print("Connected. You can use /myid to get your UserID. Use CTRL+C to stop the bot.")
     bot.infinity_polling()
 
+CMD_DESCRIPTIONS = {
+    "ru": {
+        "start": "Приветственное сообщение",
+        "launch": "",
+        "alt_f4": "",
+        "minimize_all": "",
+        "startmacro": "",
+        "stopmacro": "",
+        "keyboard": "",
+        "screenshot": "",
+        "video": "",
+        "stop": "",
+        "shutdown": "",
+        "reboot": "",
+        "cancelshutdown": "",
+        "settings": "",
+        "info": "",
+    },
+    "en": {
+        "start": "Welcome message",
+        "launch": "",
+        "alt_f4": "",
+        "minimize_all": "",
+        "startmacro": "",
+        "stopmacro": "",
+        "keyboard": "",
+        "screenshot": "",
+        "video": "",
+        "stop": "",
+        "shutdown": "",
+        "reboot": "",
+        "cancelshutdown": "",
+        "settings": "",
+        "info": "",
+    }
+}
+
+CMD_DESCRIPTIONS.update(customCMD_DESCRIPTIONS)
+
 COMMANDS = [
     {"cmd": "start",
-     "desc": "Приветственное сообщение",
+     "desc": CMD_DESCRIPTIONS[language]["start"],
      "func": "start_func",
      "admin": False},
     
