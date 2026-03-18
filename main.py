@@ -53,13 +53,13 @@ try:
 except ImportError:
     pass
 else:
-    if not strings:
+    if not strings or not customCMD_DESCRIPTIONS:
         print(Fore.BLUE+"[DEVELOPER] No custom languages found")
     print(Fore.BLUE+f"[DEVELOPER] Imported custom languages: {', '.join(strings)}")
 
 # ======== version setup ========
 version = "rolling-developer"
-build = "682"
+build = "699"
 hostname = socket.gethostname()
 system = platform.system()
 release = platform.release()
@@ -140,7 +140,10 @@ CMD_DESCRIPTIONS = {
     }
 }
 
-CMD_DESCRIPTIONS.update(customCMD_DESCRIPTIONS)
+try:
+    CMD_DESCRIPTIONS.update(customCMD_DESCRIPTIONS)
+except:
+    pass
 
 COMMANDS = [
     {"cmd": "start",
@@ -501,10 +504,7 @@ def info_func(message):
     ping2=time.time()
     delete_msg(sent)
     ping=round((ping2-ping1)*1000,1) # this is RTT
-    now = get_time()
-    name = USERS[message.from_user.id]
-    bot.reply_to(message, strings[language]["info_msg"].format(NAME=name,ISADMIN=strings[language][is_admin(message.from_user.id)],HOSTNAME=hostname,SYSTEM=system,RELEASE=release,KERNELVER=kernelver,NOW=now,PING=ping,VERSION=version,BUILD=build,UPTIME=uptime,TOOKTOSTART=tookToStart,TMSTATUS=tmstatus), parse_mode="Markdown")
-    print("[DEBUG] uptime:",get_uptime())
+    bot.reply_to(message, strings[language]["info_msg"].format(NAME=USERS[message.from_user.id],ISADMIN=strings[language][is_admin(message.from_user.id)],HOSTNAME=hostname,SYSTEM=system,RELEASE=release,KERNELVER=kernelver,NOW=get_time(),PING=ping,VERSION=version,BUILD=build,UPTIME=uptime,TOOKTOSTART=tookToStart,TMSTATUS=tmstatus), parse_mode="Markdown")
 
 def stop_func(message):
     # ts is needed in EVERY function that uses those values
@@ -524,7 +524,7 @@ def stop_func(message):
     isPendingShutdown = True
     pendingshutdowntype = strings[language]["stop"]
     shtdwntime = get_time(shtdwndelay)
-    print("[DEBUG] user",message.from_user.id,"requested bot stop, stopping at",shtdwntime,"...")
+    print(Fore.YELLOW+f"[!] Bot stop requested by {message.from_user.id}, stopping at {shtdwntime}...")
     bot.reply_to(message, strings[language]["pendingstop_msg"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
     return
 
@@ -544,7 +544,7 @@ def shutdown_func(message):
     isPendingShutdown = True
     pendingshutdowntype = strings[language]["shutdown"]
     shtdwntime = get_time(shtdwndelay)
-    print("[DEBUG] user",message.from_user.id,"requested shutdown, shutting down at",shtdwntime,"...")
+    print(Fore.YELLOW+f"[!] Shutdown requested by {message.from_user.id}, shutting down at {shtdwntime}...")
     bot.reply_to(message, strings[language]["pendingshutdown_msg"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime),parse_mode="Markdown")
     return
 
@@ -564,7 +564,7 @@ def reboot_func(message):
     isPendingShutdown = True
     pendingshutdowntype = strings[language]["reboot"]
     shtdwntime = get_time(shtdwndelay)
-    print("[DEBUG] user",message.from_user.id,"requested shutdown, shutting down at",shtdwntime,"...")
+    print(Fore.YELLOW+f"[!] Reboot requested by {message.from_user.id}, rebooting at {shtdwntime}...")
     bot.reply_to(message, strings[language]["pendingreboot_msg"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
     return
 
@@ -585,7 +585,7 @@ def cancel_shutdown_func(message):
     subprocess.Popen(CANCELSHUTDOWN_PATH)
     if pendingshutdowntype == "stop":
         stopTimer.cancel()
-    print("[DEBUG] user",message.from_user.id,"cancelled pending shutdown")
+    print(Fore.GREEN+f"Pending shutdown cancelled by {message.from_user.id}")
     bot.reply_to(message,strings[language]["cnclpendingshutdown"].format(TYPE=pendingshutdowntype), parse_mode="Markdown")
     isPendingShutdown = False
     return
@@ -840,7 +840,6 @@ Should the bot record a video on /startmacro?\
 notify_online()
 telebot.apihelper.READ_TIMEOUT = 900
 telebot.apihelper.CONNECT_TIMEOUT = 900
-print(f"[DEBUG] using locale {language}. {strings[language]["hi"]}")
 starttime = time.time() # saves the startup time to calculate uptime later when needed
 tookToStart = round(starttime-beginTime,2)
 print(Fore.GREEN+f"Bot started successfully! (took {tookToStart} seconds)")
