@@ -22,6 +22,10 @@ You can get the latest release [here](https://github.com/ImGreyCat/PCManager-tgb
 # Manual Setup
 You can download the rolling version of the code to try new features before releases! Here's how to do it:
 
+> [!NOTE]
+> Linux and macOS *are* technically supported, but the bot is mostly designed for Windows.
+> To start on these OSes, set bypassSystemCheck to True in the config file.
+
 1. **Download the source code**\
 Click the green Code button, then download ZIP to download the code.
    
