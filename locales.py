@@ -64,6 +64,28 @@ strings = {
 # ... to here
 }      
 
+
+# Command descriptions (shown in bot commands menu)
+CMD_DESCRIPTIONS = {
+    "lng": {
+        "start": "",
+        "launch": "",
+        "alt_f4": "",
+        "minimize_all": "",
+        "startmacro": "",
+        "stopmacro": "",
+        "keyboard": "",
+        "screenshot": "",
+        "video": "",
+        "stop": "",
+        "shutdown": "",
+        "reboot": "",
+        "cancelshutdown": "",
+        "settings": "",
+        "info": "",
+    }
+}
+
 # Print a message and exit if user runs this as a script
 if __name__ == "__main__":
     print("The config file isn't meant to be executed! Please run the main script instead.")
