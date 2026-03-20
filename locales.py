@@ -53,8 +53,9 @@ strings = {
         "welcome_msg": "",
         "info_msg": "{NAME} {ISADMIN} {HOSTNAME} {SYSTEM} {RELEASE} {KERNELVER} {NOW} {PING} {HALFPING} {VERSION} {BUILD} {UPTIME} {TMSTATUS}",
         # {NAME} the user's name, {ISADMIN} user is an admin yes/no {{SYSTEM} {RELEASE} {KERNELVER} for most PCs will be like "Windows 11 (10.0.21000)" {PING} {VERSION} {BUILD} {UPTIME} of the bot {TMSTATUS} current testmode status
-        "settings_msg": "{LANG} {HI} {STARTKEY} {STOPKEY} {KEYPRESSES} {SHTDWNDELAY} {RECONSTARTISON}"
+        "settings_msg": "{LANG} {HI} {STARTKEY} {STOPKEY} {KEYPRESSES} {SHTDWNDELAY} {RECONSTARTISON}",
         # {LANG} current language, {HI} greeting in that language, {KEYPRESSES} how many times bot sends the keys, {RECONSTARTISON} recording on /startmacro on or off
+        "updatedcmds_msg": ""
     },
 # If you'd like to add a second custom locale, uncomment from here...
 #    "lng2": {
