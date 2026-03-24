@@ -73,6 +73,24 @@ ADMINS = {
 
 # ========== Macro ==========
 
+# (UNFINISHED) upcoming multiple macros support 
+MACROS= {
+    "mymacro": {
+        "path": r"",
+        "startkey": "",
+        "stopkey": "",
+    },
+
+    "macro2": {
+        "path": r"",
+        "startkey": "",
+        "stopkey": "",
+    },
+}
+
+macro = ""
+# the macro to use
+
 # path to your preferred macro's .exe here (C:\Users\User\...)
 MacroPath = r""
 

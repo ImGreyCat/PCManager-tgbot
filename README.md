@@ -1,5 +1,6 @@
 # PCManager-tgbot
-A Telegram bot for managing your computer and game macros remotely, built on pure spaghetti code by a beginner!\
+A Telegram bot for managing your computer and game macros remotely\
+Built with pytelegrambotapi on pure spaghetti code!\
 <img width="269" height="246" alt="funnyscreenshot" src="https://github.com/user-attachments/assets/65fc9f48-58e3-48f0-99f8-e854b1812a3a" />
 
 # Features
@@ -9,6 +10,7 @@ A Telegram bot for managing your computer and game macros remotely, built on pur
 - Sending any keys to the keyboard
 - Taking screenshots and recording videos from your screen
 - Shutting down or rebooting the PC
+- Using a proxy to connect to Telegram
 - Can't find your favorite feature here? Create it using custom commands! 
 
 # Quick Setup
@@ -21,6 +23,10 @@ You can get the latest release [here](https://github.com/ImGreyCat/PCManager-tgb
 
 # Manual Setup
 You can download the rolling version of the code to try new features before releases! Here's how to do it:
+
+> [!NOTE]
+> Linux and macOS *are* technically supported, but the bot is mostly designed for Windows.
+> To start on these OSes, set bypassSystemCheck to True in the config file.
 
 1. **Download the source code**\
 Click the green Code button, then download ZIP to download the code.
