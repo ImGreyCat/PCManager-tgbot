@@ -50,7 +50,8 @@ try:
     from locales import strings
     from locales import CMD_DESCRIPTIONS as customCMD_DESCRIPTIONS # importing custom locales
 except ImportError:
-    pass
+    strings = {}
+    customCMD_DESCRIPTIONS = {}
 else:
     if not strings or not customCMD_DESCRIPTIONS:
         print(Fore.BLUE+"[DEVELOPER] No custom languages found")
@@ -63,6 +64,12 @@ hostname = socket.gethostname()
 system = platform.system()
 release = platform.release()
 kernelver = platform.version()
+
+if enableMultipleMacros == True:
+    MACROS = {k.lower(): v for k, v in MACROS.items()}
+    MacroPath = MACROS[defaultMacro]["path"]
+    startkey = MACROS[defaultMacro]["startKey"]
+    stopkey = MACROS[defaultMacro]["stopKey"]
 
 # paths for shutdown commands
 SHUTDOWN_PATH = rf"C:\Windows\System32\shutdown.exe -s -t {shtdwndelay}"
@@ -81,7 +88,7 @@ USERS.update(ADMINS)
 if testmode == True:
     bypassSystemCheck = True
     print(Fore.YELLOW+"[WARNING] testmode is on. see the config file to learn more about what it does")
-    MACRO_PATH = r"C:\Windows\System32\calc.exe"
+    MacroPath = r"C:\Windows\System32\calc.exe"
     shtdwndelay = shtdwndelay*2
     SHUTDOWN_PATH = rf"C:\Windows\System32\shutdown.exe -s -t {shtdwndelay}"
     REBOOT_PATH = rf"C:\Windows\System32\shutdown.exe -r -t {shtdwndelay}"
@@ -118,6 +125,7 @@ CMD_DESCRIPTIONS = {
         "reboot": "[✨ Новое] Перезагрузить компьютер",
         "cancelshutdown": "[✨ Новое] Отменить перезагрузку/выключение",
         "settings": "[✨ Новое] Получить текущие настройки",
+        "changemacro": "[✨ Новое] Изменить текущий макрос",
         "info": "Разная информация о боте",
     },
     "en": {
@@ -135,6 +143,7 @@ CMD_DESCRIPTIONS = {
         "reboot": "[✨ New] Reboot PC",
         "cancelshutdown": "[✨ New] Cancel pending shutdown",
         "settings": "[✨ New] View current settings",
+        "changemacro": "[✨ New] Change current macro",
         "info": "Various info",
     }
 }
@@ -214,6 +223,11 @@ COMMANDS = [
      "desc": CMD_DESCRIPTIONS[language]["settings"],
      "func": "settings_func",
      "admin": False},
+
+    {"cmd": "changemacro",
+     "desc": CMD_DESCRIPTIONS[language]["changemacro"],
+     "func": "changemacro_func",
+     "admin": True},
 
     {"cmd": "info",
      "desc": CMD_DESCRIPTIONS[language]["info"],
@@ -404,7 +418,7 @@ def start_func(message):
 def launchpad_func(message):
     if not authenticate(message.from_user.id,"launch the macro .exe",COMMANDS_LKUP["launch"]["admin"]):
         return
-    subprocess.Popen(MACRO_PATH)
+    subprocess.Popen(MacroPath)
     bot.reply_to(message, strings[language]["startedEXE_msg"])
 
 def closeapp_func(message):
@@ -589,6 +603,17 @@ def settings_func(message):
     recOnStartIsOn=strings[language][recordOnStart]
     bot.reply_to(message, strings[language]["settings_msg"].format(LANG=strings[language][language],HI=strings[language]["hi"],STARTKEY=startkey,STOPKEY=stopkey,KEYPRESSES=keyPresses,SHTDWNDELAY=shtdwndelay,RECONSTARTISON=recOnStartIsOn), parse_mode="Markdown")
     return
+
+def changemacro_func(message):
+    global macro, MacroPath, startkey, stopkey
+    if not authenticate(message.from_user.id,"change the current macro",COMMANDS_LKUP["changemacro"]["admin"]):
+        return
+    args = message.text.split()
+    macro = " ".join(args[1:]).lower()
+    MacroPath = MACROS[macro]["path"]
+    startkey = MACROS[macro]["startKey"]
+    stopkey = MACROS[macro]["stopKey"]
+    print(f"Set current macro to {macro}")
 
 # --------- bind all commands so they work --------- #
 
