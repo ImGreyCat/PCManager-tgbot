@@ -74,7 +74,7 @@ ADMINS = {
 # ========== Macro ==========
 
 # path to your preferred macro's .exe here (C:\Users\User\...)
-MACRO_PATH = r""
+MacroPath = r""
 
 # start and stop keys
 startkey = ""
@@ -89,6 +89,25 @@ keyPresses = 1
 # should the bot record a video when the macro is started?
 recordOnStart = True
 # default: True
+
+# (in development) use multimacro?
+enableMultipleMacros = True
+
+MACROS = {
+    "macro 2": {
+        "path": r"",
+        "startKey": "Win",
+        "stopKey": "Space",
+    },
+
+    "macro 2": {
+        "path": r"",
+        "startKey": "Win",
+        "stopKey": "Space",
+    }
+}
+
+defaultMacro="macro 1"
 
 # ========== Developer ==========
 
