@@ -60,6 +60,9 @@ Feel free to also create pull requests.
 # To do
 
  - [X] Add custom commands support
+ - [ ] Linux support
+ - [ ] View RAM/CPU usage
+ - [ ] Uploading files
  - [ ] Move to asynchronous 
  - [ ] Support for multiple macro .exes and launching them separately
  - [ ] De-spaghetti the code
