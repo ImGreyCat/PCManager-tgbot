@@ -60,6 +60,9 @@ Feel free to also create pull requests.
 # To do
 
  - [X] Add custom commands support
+ - [ ] Allow users to enable or disable certain features
+ - [ ] Add logging
+ - [ ] /help command or GitHub wiki
  - [ ] Linux support
  - [ ] View RAM/CPU usage
  - [ ] Uploading files
