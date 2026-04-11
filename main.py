@@ -109,128 +109,343 @@ if not USERS: # here we check if the userlist is empty and if it is we start in 
     print("Connected. You can use /myid to get your UserID. Use CTRL+C to stop the bot.")
     bot.infinity_polling()
 
-CMD_DESCRIPTIONS = {
+# ----- define locales ----- #
+# strings[language]["keyname"].format(valueplaceholder=value) -> "corresponding string"
+strings = {
+    # RUSSIAN
     "ru": {
-        "start": "Приветственное сообщение",
-        "launch": "Запустить .exe макроса",
-        "alt_f4": "[✨ Новое] Закрыть приложение в фокусе",
-        "minimize_all": "[✨ Новое] Свернуть все приложения",
-        "startmacro": 'Нажать кнопку "старт"',
-        "stopmacro": 'Нажать кнопку "стоп"',
-        "keyboard": '[✨ Новое] Отправить клавишу на компьютер',
-        "screenshot": "Сделать скриншот",
-        "video": "Записать видео",
-        "stop": "[✨ Новое] Выключить бота",
-        "shutdown": "[✨ Новое] Выключить компьютер",
-        "reboot": "[✨ Новое] Перезагрузить компьютер",
-        "cancelshutdown": "[✨ Новое] Отменить перезагрузку/выключение",
-        "settings": "[✨ Новое] Получить текущие настройки",
-        "changemacro": "[✨ Новое] Изменить текущий макрос",
-        "info": "Разная информация о боте",
+        "hi": "привет!",
+        "ru": "Русский",
+        "en": "Английский",
+        "y": "да",
+        "n": "нет",
+        "stop": "остановка",
+        "shutdown": "выключение",
+        "reboot": "перезагрузка",
+        True: "вкл.",
+        False: "выкл.",
+        "unknown": "неизвестно",
+        "done": "Готово!",
+        "startedEXE_msg": "🔌 .exe макроса запущен!",
+        "sendingAltF4_msg": "Закрываю приложение спереди...",
+        "sentAltF4_msg": "✅ Alt+F4 успешно отправлено!",
+        "minimizingAll_msg": "Сворачиваю все приложения...",
+        "startsent_vid_msg": "▶️ Клавиша старта отправлена, записываю видео...",
+        "startsent_novid_msg": "▶️ Клавиша старта отправлена!",
+        "stopsent_msg": "⏹ Клавиша стоп отправлена!",
+        "nokey_msg": "❌ Не указана клавиша.\nСинтаксис: /keyboard <клавиша>",
+        "invalidkey_msg": "❌ Неверно указано клавиша.\nСинтаксис: /keyboard <клавиша>\nКлавиши: a-z, 0-9, ctrl, alt, win, shift, space, enter",
+        "sentkey_msg": "✅ Клавиша {SENTKEY} успешно отправлена!",
+        "takingscrshot_msg": "Делаю скриншот...",
+        "recordingvid_msg": "Записываю видео...",
+        "chkping_msg": "Быстренько проверяю пинг с Telegram API...",
+        "scrshot_capt": "[{NOW}] Скриншот",
+        "vid_capt": "[{NOW}] Видео",
+        "BON_msg": "🟢 Бот онлайн!\nПК: *{HOSTNAME}*\nВремя: *{NOW}*",
+        "err403msg": "❌ У вас нет разрешения на управление ботом.\nЕсли вы считаете, что я ошибаюсь, пожалуйста, напишите админу.",
+        "notanadmin_msg": "❌ Недостаточно прав. Только администраторы могут использовать эту команду.",
+        "pendingstop_msg": "*🛑 Запланирована остановка бота через {SHTDWNDELAY} секунд!*\n(!) Бот перестанет работать, но компьютер останется включённым.\n\nОстановка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
+        "pendingshutdown_msg": "*💤 Запланировано выключение компьютера через {SHTDWNDELAY} секунд!!*\n(!!!) После выключения бот перестанет работать!\n\nВыключение в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
+        "pendingreboot_msg": "*🔄 Запланирована перезагрузка компьютера через {SHTDWNDELAY} секунд!*\n(!!) После перезагрузки бот может перестать работать\n\nПерезагрузка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
+        "shtdwnnotpending_msg": "Насколько мне известно, компьютер выключаться не собирался...",
+        "alrpending_msg": "*Ошибка*: уже планируется *{PENDINGSHUTDOWNTYPE}* в *{SHTDWNTIME}*.\nНеобходимо сначала отменить это действие: */cancelshutdown*",
+        "cnclpendingshutdown": "✅ Успешно отменено запланированное действие: {TYPE}.",
+        "welcome_msg": "\
+Здравствуйте, {NAME}! ✅ Бот активен и вы имеете права на управление.\n\
+Доступные команды:\n\
+/start - получить это сообщение\n\
+/launch - запустить .exe макроса\n\
+/alt_f4 - закрыть приложение в фокусе\n\
+/startmacro - послать старт\n\
+/stopmacro - послать стоп\n\
+/keyboard - послать клавишу на компьютер\n\
+/screenshot - сделать скриншот\n\
+/video - записать видео на 15 секунд\n\
+/stop - остановить бота\n\
+/shutdown - выключить компьютер\n\
+/reboot - перезагрузить компьютер\n\
+/cancelshutdown - отменить запланированное действие\n\
+/settings - просмотреть текущие настройки\n\
+/info - посмотреть разную информацию о боте\n\n\
+\
+Сделано @ImGreyCat с <3",
+        "info_msg": "\
+*ℹ️ Информация и статус*\n\n\
+\
+*🔑 Авторизация*\n\
+Ваше имя: *{NAME}*\n\
+Базовые права: *да*\n\
+Права администратора: *{ISADMIN}*\n\n\
+\
+*🖥 Компьютер*\n\
+Имя: *{HOSTNAME}*\n\
+Система: *{SYSTEM} {RELEASE} ({KERNELVER})*\n\
+Время: *{NOW}*\nПинг до Telegram API (RTT): *{PING} мс *\n\n\
+\
+*🤖 Бот*\n\
+Версия: *{VERSION} (сборка {BUILD})*\n\
+Время работы: *{UPTIME}*\n\
+Время на запуск: *{TOOKTOSTART} сек.*\n\
+🧪 Тестовый режим: *{TMSTATUS}*\
+",
+
+        # ------------
+
+        "settings_msg": "\
+*⚙️ Настройки бота*\n\
+Их можно изменить в файле конфигурации.\n\n\
+\
+🏳️ Язык: *{LANG} ({HI})*\n\
+▶️ Кнопка старт: *{STARTKEY}*\n\
+⏹ Кнопка стоп: *{STOPKEY}*\n\n\
+\
+> ⌨️ Кол-во нажатий старт/стоп: *{KEYPRESSES}*\n\
+Бот отправляет старт/стоп это кол-во раз.\n\n\
+\
+> ⏱ Задержка выключения (сек.): *{SHTDWNDELAY}*\n\
+Столько секунд бот будет ждать перед выключением/перезагрузкой.\n\n\
+\
+> 🎥 Запись при старте: *{RECONSTARTISON}*\n\
+Будет ли бот записывать видео при /startmacro?\
+",
+        "updatedcmds_msg": "Список команд обновлён успешно.\nВнимание! Вы можете не увидеть изменения, пока полностью не перезапустите Telegram.",
+        "start_cmd": "Приветственное сообщение",
+        "launch_cmd": "Запустить .exe макроса",
+        "alt_f4_cmd": "[✨ Новое] Закрыть приложение в фокусе",
+        "minimize_all_cmd": "[✨ Новое] Свернуть все приложения",
+        "startmacro_cmd": 'Нажать кнопку "старт"',
+        "stopmacro_cmd": 'Нажать кнопку "стоп"',
+        "keyboard_cmd": '[✨ Новое] Отправить клавишу на компьютер',
+        "screenshot_cmd": "Сделать скриншот",
+        "video_cmd": "Записать видео",
+        "stop_cmd": "[✨ Новое] Выключить бота",
+        "shutdown_cmd": "[✨ Новое] Выключить компьютер",
+        "reboot_cmd": "[✨ Новое] Перезагрузить компьютер",
+        "cancelshutdown_cmd": "[✨ Новое] Отменить перезагрузку/выключение",
+        "settings_cmd": "[✨ Новое] Получить текущие настройки",
+        "changemacro_cmd": "[✨ Новое] Изменить текущий макрос",
+        "info_cmd": "Разная информация о боте",
     },
+
+    # ENGLISH
     "en": {
-        "start": "Welcome message",
-        "launch": "Launch macro .exe",
-        "alt_f4": "[✨ New] Close focused app",
-        "minimize_all": "[✨ New] Minimize all apps",
-        "startmacro": "Send start key",
-        "stopmacro": "Send stop key",
-        "keyboard": "[✨ New] Send key",
-        "screenshot": "Take a screenshot",
-        "video": "Record a video",
-        "stop": "[✨ New] Stop the bot",
-        "shutdown": "[✨ New] Turn off PC",
-        "reboot": "[✨ New] Reboot PC",
-        "cancelshutdown": "[✨ New] Cancel pending shutdown",
-        "settings": "[✨ New] View current settings",
-        "changemacro": "[✨ New] Change current macro",
-        "info": "Various info",
+        "hi": "hi!",
+        "ru": "Russian",
+        "en": "English",
+        "y": "yes",
+        "n": "no",
+        "stop": "stop",
+        "shutdown": "shutdown",
+        "reboot": "reboot",
+        True: "on",
+        False: "off",
+        "unknown": "unknown",
+        "done": "Done!",
+        "startedEXE_msg": "🔌 Started macro .exe!",
+        "sendingAltF4_msg": "Closing focused app...",
+        "sentAltF4_msg": "✅ Sent Alt+F4 successfully!",
+        "startsent_vid_msg": "▶️ Start key sent, recording a video...",
+        "startsent_novid_msg": "▶️ Start key sent!",
+        "stopsent_msg": "⏹ Stop key sent!",
+        "nokey_msg": "❌ No key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
+        "invalidkey_msg": "❌ Invalid key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
+        "sentkey_msg": "✅ Sent key {SENTKEY} successfully!",
+        "takingscrshot_msg": "Taking a screenshot...",
+        "chkping_msg": "Pinging the Telegram API real quick...",
+        "scrshot_capt": "[{NOW}] Screenshot",
+        "vid_capt": "[{NOW}] Video",
+        "BON_msg": "🟢 Now online!\nPC: *{HOSTNAME}*\nTime: *{NOW}*",
+        "err403msg": "❌ You do not have permission to use the bot.\nIf you think I'm mistaken, please contact the admin.",
+        "notanadmin_msg": "❌ Insufficient permissions. Only admins can use this command.",
+        "pendingstop_msg": "*🛑 Bot stop scheduled in {SHTDWNDELAY} seconds!*\n(!) The bot will stop working, but the RPC will keep running.\n\nStopping at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "pendingshutdown_msg": "*💤 Computer shutdown scheduled in {SHTDWNDELAY} seconds!!*\n(!!!) The bot will stop working after shutdown!\n\nShutting down at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "pendingreboot_msg": "*🔄 Computer reboot scheduled in {SHTDWNDELAY} seconds!*\n(!!) The bot may stop working after reboot\n\nRebooting at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "shtdwnnotpending_msg": "As far as I can see, the computer doesn't have a scheduled shutdown...",
+        "alrpending_msg": "*Error*: there's already a *{PENDINGSHUTDOWNTYPE}* pending at *{SHTDWNTIME}*.\nTo schedule a shutdown, please cancel this one first: */cancelshutdown*",
+        "cnclpendingshutdown": "✅ Cancelled pending {TYPE} successfully.",
+        "welcome_msg": "null",
+        "info_msg": "\
+*ℹ️ Info and status*\n\n\
+\
+*🔑 Authorization*\n\
+Your name: *{NAME}*\n\
+Default permissions: *yes*\n\
+Admin permissions: *{ISADMIN}*\n\n\
+\
+*🖥 Computer*\n\
+Hostname: *{HOSTNAME}*\n\
+System: *{SYSTEM} {RELEASE} ({KERNELVER})*\n\
+Time: *{NOW}*\nPing to Telegram API (RTT): *{PING} ms*\n\n\
+\
+*🤖 Bot*\n\
+Version: *{VERSION} (build {BUILD})*\n\
+Uptime: *{UPTIME}*\n\
+Startup time: *{TOOKTOSTART} sec*\n\
+🧪 Testmode: *{TMSTATUS}*\
+",
+
+        # ------------
+
+        "settings_msg": "\
+*⚙️ Bot settings*\n\
+You can change these in the configuration file.\n\n\
+\
+🏳️ Language: *{LANG}: {HI}*\n\
+▶️ Start button: *{STARTKEY}*\n\
+⏹ Stop button: *{STOPKEY}*\n\n\
+\
+🡒 ⌨️ Start/stop button presses: *{KEYPRESSES}*\n\
+The bot sends start/stop this amount of times.\n\n\
+\
+🡒 ⏱ Shutdown delay (s.): *{SHTDWNDELAY}*\n\
+The bot will wait for this amount of seconds before shutdown.\n\n\
+\
+🡒 🎥 Record on start: *{RECONSTARTISON}*\n\
+Should the bot record a video on /startmacro?\
+",
+        "updatedcmds_msg": "Commands succesfully refreshed.\nPlease note that you might need to fully restart Telegram for the changes to show!",
+        "start_cmd": "Welcome message",
+        "launch_cmd": "Launch macro .exe",
+        "alt_f4_cmd": "[✨ New] Close focused app",
+        "minimize_all_cmd": "[✨ New] Minimize all apps",
+        "startmacro_cmd": "Send start key",
+        "stopmacro_cmd": "Send stop key",
+        "keyboard_cmd": "[✨ New] Send key",
+        "screenshot_cmd": "Take a screenshot",
+        "video_cmd": "Record a video",
+        "stop_cmd": "[✨ New] Stop the bot",
+        "shutdown_cmd": "[✨ New] Turn off PC",
+        "reboot_cmd": "[✨ New] Reboot PC",
+        "cancelshutdown_cmd": "[✨ New] Cancel pending shutdown",
+        "settings_cmd": "[✨ New] View current settings",
+        "changemacro_cmd": "[✨ New] Change current macro",
+        "info_cmd": "Various info",
     }
 }
 
-try:
-    CMD_DESCRIPTIONS.update(customCMD_DESCRIPTIONS)
-except:
-    pass
+
+# CMD_DESCRIPTIONS = {
+#     "ru": {
+#         "start": "Приветственное сообщение",
+#         "launch": "Запустить .exe макроса",
+#         "alt_f4": "[✨ Новое] Закрыть приложение в фокусе",
+#         "minimize_all": "[✨ Новое] Свернуть все приложения",
+#         "startmacro": 'Нажать кнопку "старт"',
+#         "stopmacro": 'Нажать кнопку "стоп"',
+#         "keyboard": '[✨ Новое] Отправить клавишу на компьютер',
+#         "screenshot": "Сделать скриншот",
+#         "video": "Записать видео",
+#         "stop": "[✨ Новое] Выключить бота",
+#         "shutdown": "[✨ Новое] Выключить компьютер",
+#         "reboot": "[✨ Новое] Перезагрузить компьютер",
+#         "cancelshutdown": "[✨ Новое] Отменить перезагрузку/выключение",
+#         "settings": "[✨ Новое] Получить текущие настройки",
+#         "changemacro": "[✨ Новое] Изменить текущий макрос",
+#         "info": "Разная информация о боте",
+#     },
+#     "en": {
+#         "start": "Welcome message",
+#         "launch": "Launch macro .exe",
+#         "alt_f4": "[✨ New] Close focused app",
+#         "minimize_all": "[✨ New] Minimize all apps",
+#         "startmacro": "Send start key",
+#         "stopmacro": "Send stop key",
+#         "keyboard": "[✨ New] Send key",
+#         "screenshot": "Take a screenshot",
+#         "video": "Record a video",
+#         "stop": "[✨ New] Stop the bot",
+#         "shutdown": "[✨ New] Turn off PC",
+#         "reboot": "[✨ New] Reboot PC",
+#         "cancelshutdown": "[✨ New] Cancel pending shutdown",
+#         "settings": "[✨ New] View current settings",
+#         "changemacro": "[✨ New] Change current macro",
+#         "info": "Various info",
+#     }
+# }
+
+# try:
+#     CMD_DESCRIPTIONS.update(customCMD_DESCRIPTIONS)
+# except:
+#     pass
 
 COMMANDS = [
     {"cmd": "start",
-     "desc": CMD_DESCRIPTIONS[language]["start"],
+     "desc": strings[language]["start_cmd"],
      "func": "start_func",
      "admin": False},
     
     {"cmd": "launch",
-     "desc": CMD_DESCRIPTIONS[language]["launch"],
+     "desc": strings[language]["launch_cmd"],
      "func": "launchpad_func",
      "admin": True},
 
     {"cmd": "alt_f4",
-     "desc": CMD_DESCRIPTIONS[language]["alt_f4"],
+     "desc": strings[language]["alt_f4_cmd"],
      "func": "closeapp_func",
      "admin": True},
 
     {"cmd": "minimize_all",
-     "desc": CMD_DESCRIPTIONS[language]["minimize_all"],
+     "desc": strings[language]["minimize_all_cmd"],
      "func": "minimize_all_func",
      "admin": True},
     
     {"cmd": "startmacro",
-     "desc": CMD_DESCRIPTIONS[language]["startmacro"],
+     "desc": strings[language]["startmacro_cmd"],
      "func": "startmacro_func",
      "admin": False},
     
     {"cmd": "stopmacro",
-     "desc": CMD_DESCRIPTIONS[language]["stopmacro"],
+     "desc": strings[language]["stopmacro_cmd"],
      "func": "stopmacro_func",
      "admin": False},
 
     {"cmd": "keyboard",
-     "desc": CMD_DESCRIPTIONS[language]["keyboard"],
+     "desc": strings[language]["keyboard_cmd"],
      "func": "keyboard_func",
      "admin": False},
     
     {"cmd": "screenshot",
-     "desc": CMD_DESCRIPTIONS[language]["screenshot"],
+     "desc": strings[language]["screenshot_cmd"],
      "func": "screenshot_func",
      "admin": False},
 
     {"cmd": "video",
-     "desc": CMD_DESCRIPTIONS[language]["video"],
+     "desc": strings[language]["video_cmd"],
      "func": "video_func",
      "admin": False},
 
     {"cmd": "stop",
-     "desc": CMD_DESCRIPTIONS[language]["stop"],
+     "desc": strings[language]["stop_cmd"],
      "func": "stop_func",
      "admin": True},
 
     {"cmd": "shutdown",
-     "desc": CMD_DESCRIPTIONS[language]["shutdown"],
+     "desc": strings[language]["shutdown_cmd"],
      "func": "shutdown_func",
      "admin": True},
 
     {"cmd": "reboot",
-     "desc": CMD_DESCRIPTIONS[language]["reboot"],
+     "desc": strings[language]["reboot_cmd"],
      "func": "reboot_func",
      "admin": True},
 
     {"cmd": "cancelshutdown",
-     "desc": CMD_DESCRIPTIONS[language]["cancelshutdown"],
+     "desc": strings[language]["cancelshutdown_cmd"],
      "func": "cancel_shutdown_func",
      "admin": True},
 
     {"cmd": "settings",
-     "desc": CMD_DESCRIPTIONS[language]["settings"],
+     "desc": strings[language]["settings_cmd"],
      "func": "settings_func",
      "admin": False},
 
     {"cmd": "changemacro",
-     "desc": CMD_DESCRIPTIONS[language]["changemacro"],
+     "desc": strings[language]["changemacro_cmd"],
      "func": "changemacro_func",
      "admin": True},
 
     {"cmd": "info",
-     "desc": CMD_DESCRIPTIONS[language]["info"],
+     "desc": strings[language]["info_cmd"],
      "func": "info_func",
      "admin": False}
 ]
@@ -669,189 +884,6 @@ def hi(message):
     time.sleep(random.uniform(0.4,2.6))
     bot.reply_to(message,strings[language]["hi"]+append)
 
-# ----- define locales ----- #
-# strings[language]["keyname"].format(valueplaceholder=value) -> "corresponding string"
-strings = {
-    # RUSSIAN
-    "ru": {
-        "hi": "привет!",
-        "ru": "Русский",
-        "en": "Английский",
-        "y": "да",
-        "n": "нет",
-        "stop": "остановка",
-        "shutdown": "выключение",
-        "reboot": "перезагрузка",
-        True: "вкл.",
-        False: "выкл.",
-        "unknown": "неизвестно",
-        "done": "Готово!",
-        "startedEXE_msg": "🔌 .exe макроса запущен!",
-        "sendingAltF4_msg": "Закрываю приложение спереди...",
-        "sentAltF4_msg": "✅ Alt+F4 успешно отправлено!",
-        "minimizingAll_msg": "Сворачиваю все приложения...",
-        "startsent_vid_msg": "▶️ Клавиша старта отправлена, записываю видео...",
-        "startsent_novid_msg": "▶️ Клавиша старта отправлена!",
-        "stopsent_msg": "⏹ Клавиша стоп отправлена!",
-        "nokey_msg": "❌ Не указана клавиша.\nСинтаксис: /keyboard <клавиша>",
-        "invalidkey_msg": "❌ Неверно указано клавиша.\nСинтаксис: /keyboard <клавиша>\nКлавиши: a-z, 0-9, ctrl, alt, win, shift, space, enter",
-        "sentkey_msg": "✅ Клавиша {SENTKEY} успешно отправлена!",
-        "takingscrshot_msg": "Делаю скриншот...",
-        "recordingvid_msg": "Записываю видео...",
-        "chkping_msg": "Быстренько проверяю пинг с Telegram API...",
-        "scrshot_capt": "[{NOW}] Скриншот",
-        "vid_capt": "[{NOW}] Видео",
-        "BON_msg": "🟢 Бот онлайн!\nПК: *{HOSTNAME}*\nВремя: *{NOW}*",
-        "err403msg": "❌ У вас нет разрешения на управление ботом.\nЕсли вы считаете, что я ошибаюсь, пожалуйста, напишите админу.",
-        "notanadmin_msg": "❌ Недостаточно прав. Только администраторы могут использовать эту команду.",
-        "pendingstop_msg": "*🛑 Запланирована остановка бота через {SHTDWNDELAY} секунд!*\n(!) Бот перестанет работать, но компьютер останется включённым.\n\nОстановка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
-        "pendingshutdown_msg": "*💤 Запланировано выключение компьютера через {SHTDWNDELAY} секунд!!*\n(!!!) После выключения бот перестанет работать!\n\nВыключение в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
-        "pendingreboot_msg": "*🔄 Запланирована перезагрузка компьютера через {SHTDWNDELAY} секунд!*\n(!!) После перезагрузки бот может перестать работать\n\nПерезагрузка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
-        "shtdwnnotpending_msg": "Насколько мне известно, компьютер выключаться не собирался...",
-        "alrpending_msg": "*Ошибка*: уже планируется *{PENDINGSHUTDOWNTYPE}* в *{SHTDWNTIME}*.\nНеобходимо сначала отменить это действие: */cancelshutdown*",
-        "cnclpendingshutdown": "✅ Успешно отменено запланированное действие: {TYPE}.",
-        "welcome_msg":"\
-Здравствуйте, {NAME}! ✅ Бот активен и вы имеете права на управление.\n\
-Доступные команды:\n\
-/start - получить это сообщение\n\
-/launch - запустить .exe макроса\n\
-/alt_f4 - закрыть приложение в фокусе\n\
-/startmacro - послать старт\n\
-/stopmacro - послать стоп\n\
-/keyboard - послать клавишу на компьютер\n\
-/screenshot - сделать скриншот\n\
-/video - записать видео на 15 секунд\n\
-/stop - остановить бота\n\
-/shutdown - выключить компьютер\n\
-/reboot - перезагрузить компьютер\n\
-/cancelshutdown - отменить запланированное действие\n\
-/settings - просмотреть текущие настройки\n\
-/info - посмотреть разную информацию о боте\n\n\
-\
-Сделано @ImGreyCat с <3",
-        "info_msg": "\
-*ℹ️ Информация и статус*\n\n\
-\
-*🔑 Авторизация*\n\
-Ваше имя: *{NAME}*\n\
-Базовые права: *да*\n\
-Права администратора: *{ISADMIN}*\n\n\
-\
-*🖥 Компьютер*\n\
-Имя: *{HOSTNAME}*\n\
-Система: *{SYSTEM} {RELEASE} ({KERNELVER})*\n\
-Время: *{NOW}*\nПинг до Telegram API (RTT): *{PING} мс *\n\n\
-\
-*🤖 Бот*\n\
-Версия: *{VERSION} (сборка {BUILD})*\n\
-Время работы: *{UPTIME}*\n\
-Время на запуск: *{TOOKTOSTART} сек.*\n\
-🧪 Тестовый режим: *{TMSTATUS}*\
-",
-
-# ------------
-        
-        "settings_msg": "\
-*⚙️ Настройки бота*\n\
-Их можно изменить в файле конфигурации.\n\n\
-\
-🏳️ Язык: *{LANG} ({HI})*\n\
-▶️ Кнопка старт: *{STARTKEY}*\n\
-⏹ Кнопка стоп: *{STOPKEY}*\n\n\
-\
-> ⌨️ Кол-во нажатий старт/стоп: *{KEYPRESSES}*\n\
-Бот отправляет старт/стоп это кол-во раз.\n\n\
-\
-> ⏱ Задержка выключения (сек.): *{SHTDWNDELAY}*\n\
-Столько секунд бот будет ждать перед выключением/перезагрузкой.\n\n\
-\
-> 🎥 Запись при старте: *{RECONSTARTISON}*\n\
-Будет ли бот записывать видео при /startmacro?\
-",
-        "updatedcmds_msg":"Список команд обновлён успешно.\nВнимание! Вы можете не увидеть изменения, пока полностью не перезапустите Telegram."
-    
-    },
-
-    # ENGLISH
-    "en": {
-        "hi": "hi!",
-        "ru": "Russian",
-        "en": "English",
-        "y": "yes",
-        "n": "no",
-        "stop": "stop",
-        "shutdown": "shutdown",
-        "reboot": "reboot",
-        True: "on",
-        False: "off",
-        "unknown": "unknown",
-        "done": "Done!",
-        "startedEXE_msg": "🔌 Started macro .exe!",
-        "sendingAltF4_msg": "Closing focused app...",
-        "sentAltF4_msg": "✅ Sent Alt+F4 successfully!",
-        "startsent_vid_msg": "▶️ Start key sent, recording a video...",
-        "startsent_novid_msg": "▶️ Start key sent!",
-        "stopsent_msg": "⏹ Stop key sent!",
-        "nokey_msg": "❌ No key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
-        "invalidkey_msg": "❌ Invalid key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
-        "sentkey_msg": "✅ Sent key {SENTKEY} successfully!",
-        "takingscrshot_msg": "Taking a screenshot...",
-        "chkping_msg": "Pinging the Telegram API real quick...",
-        "scrshot_capt": "[{NOW}] Screenshot",
-        "vid_capt": "[{NOW}] Video",
-        "BON_msg": "🟢 Now online!\nPC: *{HOSTNAME}*\nTime: *{NOW}*",
-        "err403msg": "❌ You do not have permission to use the bot.\nIf you think I'm mistaken, please contact the admin.",
-        "notanadmin_msg": "❌ Insufficient permissions. Only admins can use this command.",
-        "pendingstop_msg": "*🛑 Bot stop scheduled in {SHTDWNDELAY} seconds!*\n(!) The bot will stop working, but the RPC will keep running.\n\nStopping at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
-        "pendingshutdown_msg": "*💤 Computer shutdown scheduled in {SHTDWNDELAY} seconds!!*\n(!!!) The bot will stop working after shutdown!\n\nShutting down at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
-        "pendingreboot_msg": "*🔄 Computer reboot scheduled in {SHTDWNDELAY} seconds!*\n(!!) The bot may stop working after reboot\n\nRebooting at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
-        "shtdwnnotpending_msg": "As far as I can see, the computer doesn't have a scheduled shutdown...",
-        "alrpending_msg": "*Error*: there's already a *{PENDINGSHUTDOWNTYPE}* pending at *{SHTDWNTIME}*.\nTo schedule a shutdown, please cancel this one first: */cancelshutdown*",
-        "cnclpendingshutdown": "✅ Cancelled pending {TYPE} successfully.",
-        "welcome_msg":"null",
-        "info_msg": "\
-*ℹ️ Info and status*\n\n\
-\
-*🔑 Authorization*\n\
-Your name: *{NAME}*\n\
-Default permissions: *yes*\n\
-Admin permissions: *{ISADMIN}*\n\n\
-\
-*🖥 Computer*\n\
-Hostname: *{HOSTNAME}*\n\
-System: *{SYSTEM} {RELEASE} ({KERNELVER})*\n\
-Time: *{NOW}*\nPing to Telegram API (RTT): *{PING} ms*\n\n\
-\
-*🤖 Bot*\n\
-Version: *{VERSION} (build {BUILD})*\n\
-Uptime: *{UPTIME}*\n\
-Startup time: *{TOOKTOSTART} sec*\n\
-🧪 Testmode: *{TMSTATUS}*\
-",
-
-# ------------
-
-        
-        "settings_msg": "\
-*⚙️ Bot settings*\n\
-You can change these in the configuration file.\n\n\
-\
-🏳️ Language: *{LANG}: {HI}*\n\
-▶️ Start button: *{STARTKEY}*\n\
-⏹ Stop button: *{STOPKEY}*\n\n\
-\
-🡒 ⌨️ Start/stop button presses: *{KEYPRESSES}*\n\
-The bot sends start/stop this amount of times.\n\n\
-\
-🡒 ⏱ Shutdown delay (s.): *{SHTDWNDELAY}*\n\
-The bot will wait for this amount of seconds before shutdown.\n\n\
-\
-🡒 🎥 Record on start: *{RECONSTARTISON}*\n\
-Should the bot record a video on /startmacro?\
-",
-        "updatedcmds_msg": "Commands succesfully refreshed.\nPlease note that you might need to fully restart Telegram for the changes to show!",
-    }
-}
 
 # ------------------- start bot ------------------- #
 # ---- everything here will execute on startup ---- #
