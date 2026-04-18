@@ -1,8 +1,9 @@
-# Custom commands file
+### Custom commands file
 # Create your custom features here! You'll be able to run any of these in your bot.
-# That's only for advanced coders, so only create these if you know what you're doing.
+# This is an advanced feature. Creating custom commands requires Python knowledge. Use them only if you know what you're doing.
+# [!!!] IMPORTANT: don't blindly paste code you don't understand here! it can make your bot and PC vulnerable!
 
-# Useful helper functions:
+### Useful helper functions:
 # get_time(offset (int, in seconds) - outputs the time in HH:mm:ss (HH:mm:ss AM/PM for 12-hour time) + the offset in seconds (default 0)
 # take_screenshot(chat_id)
 # record_video_ram(chat_id, length (int, in seconds), bitrate (str, ####k))
@@ -10,9 +11,10 @@
 # is_admin(user_id) - returns "y" or "n"
 # delete_msg(message)
 
-# Note! All your custom commands will be added to the bot's menu. To clear and update it, run /upd_cmds.
+# Note! All your custom commands will be added to the bot's menu.
+# The menu refreshes automatically upon bot start, but to force clear and update it, run /upd_cmds.
 
-# command list
+### command list
 
 CUSTOM_CMDS = [
     {"cmd": "custom", # the command name (/####)
@@ -26,7 +28,7 @@ CUSTOM_CMDS = [
      "admin": False},
 ]
 
-# the command functions
+### the command functions (make sure the function names match "func" for the corresponding command above!)
 
 def custom_cmd_func(message):
     if not authenticate(message.from_user.id,"run the first custom command",COMMANDS_LKUP["custom"]["admin"]): # this is how the bot authenticates by default, make sure to change these values so everything works correctly
