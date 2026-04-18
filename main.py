@@ -455,7 +455,7 @@ COMMANDS_LKUP = {c["cmd"]: c for c in COMMANDS}
 
 # -------------------- initialize bot -------------------- #
 bot = telebot.TeleBot(TOKEN)
-if useProxy is True:
+if useProxy is True: # logic to connect through proxy
     print("Connecting to Telegram through proxy...")
     if proxyUsername and proxyPassword:
         # Authenticated format: protocol://user:pass@ip:port
@@ -471,7 +471,7 @@ if useProxy is True:
         print(Fore.RED+f"[ERROR] Proxy connection failed: {e}")
         input("The bot can't continue running. Press Enter to exit...")
         raise SystemExit
-else:
+else: # connection without a proxy
     print("Connecting to Telegram...")
     try:
         me = bot.get_me()
@@ -487,7 +487,7 @@ print("Synced!")
 
 # ------------------ basic functions ------------------  #
 
-# ---------- Screenshot ---------
+# take a screenshot and send it to chat_id
 def take_screenshot(chat_id):
     screenshot = ImageGrab.grab()
     bio = io.BytesIO()
@@ -496,8 +496,8 @@ def take_screenshot(chat_id):
     bio.seek(0)
     bot.send_photo(chat_id, bio, caption=strings[language]["scrshot_capt"].format(NOW=get_time())) # sends the taken screenshot right away
 
-# ------------ Video recording (RAM) -------------- #
-# ---------- records a video into ram ------------- #
+# record a video into RAM
+# supports length and bitrate options
 def record_video_ram(chat_id=None, length=videoLength, bitrate="4000k"):
     now = get_time()
     print(f"[DEBUG] [{now}] video requested for chat {chat_id}, recording now...")
@@ -575,15 +575,15 @@ def authenticate(user_id, target="do unknown action", adminOnly=False):
     if user_id in ADMINS:
         isanadmin=True
     if adminOnly==False and (isauser==True):
-        print(f"[DEBUG] {user_id} authenticated to {target} successfully")
+        print(f"[AUTH] {user_id} requested to {target}")
         return True
     if adminOnly==True and isanadmin==True:
-        print(Fore.MAGENTA+f"[DEBUG] [ADMIN] {user_id} authenticated to {target} successfully")
+        print(Fore.MAGENTA+f"[ADMIN] {user_id} requested to {target}")
         return True
     if adminOnly==True and (isauser==True and isanadmin==False):
-        print(f"[DEBUG] {user_id} tried authenticating to {target}, but isn't an admin")
+        print(f"[AUTH] {user_id} tried requesting to {target}, but isn't an admin")
         bot.send_message(user_id, strings[language]["notanadmin_msg"],parse_mode="Markdown")
-    print(f"[DEBUG] {user_id} tried authenticating to {target}, but isn't a user")
+    print(f"[AUTH] {user_id} tried requesting to {target}, but isn't a user")
     bot.send_message(user_id, strings[language]["err403msg"],parse_mode="Markdown")
     return False
 
@@ -626,8 +626,6 @@ def stop_bot():
 def start_func(message):
     if not authenticate(message.from_user.id,"get the welcome message",COMMANDS_LKUP["start"]["admin"]):
         return
-
-    # sends the welcome message
     bot.reply_to(message,strings[language]["welcome_msg"].format(NAME=USERS[message.from_user.id]))
 
 def launchpad_func(message):
@@ -716,7 +714,7 @@ def video_func(message):
 def info_func(message):
     if not authenticate(message.from_user.id,"request info",COMMANDS_LKUP["info"]["admin"]):
         return
-    if testmode is not True and testmode is not False:
+    if testmode is not True and testmode is not False: # if else if else if else
         tmstatus=strings[language]["unknown"]
     else:
         tmstatus=strings[language][testmode]
@@ -728,8 +726,8 @@ def info_func(message):
     ping=round((ping2-ping1)*1000,1) # this is RTT
     bot.reply_to(message, strings[language]["info_msg"].format(NAME=USERS[message.from_user.id],ISADMIN=strings[language][is_admin(message.from_user.id)],HOSTNAME=hostname,SYSTEM=system,RELEASE=release,KERNELVER=kernelver,NOW=get_time(),PING=ping,VERSION=version,BUILD=build,UPTIME=uptime,TOOKTOSTART=tookToStart,TMSTATUS=tmstatus), parse_mode="Markdown")
 
+# unfortunately i couldn't find a way to avoid using so much "global" statements
 def stop_func(message):
-    # ts is needed in EVERY function that uses those values
     global isPendingShutdown
     global pendingshutdowntype
     global shtdwntime
@@ -751,7 +749,6 @@ def stop_func(message):
     return
 
 def shutdown_func(message):
-    # ts is needed in EVERY function that uses those values
     global isPendingShutdown
     global pendingshutdowntype
     global shtdwntime
@@ -771,7 +768,6 @@ def shutdown_func(message):
     return
 
 def reboot_func(message):
-    # ts is needed in EVERY function that uses those values
     global isPendingShutdown
     global pendingshutdowntype
     global shtdwntime
@@ -791,7 +787,6 @@ def reboot_func(message):
     return
 
 def cancel_shutdown_func(message):
-    # ts is needed in EVERY function that uses those values
     global isPendingShutdown
     global pendingshutdowntype
     global shtdwntime
