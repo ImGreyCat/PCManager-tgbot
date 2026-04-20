@@ -73,20 +73,7 @@ ADMINS = {
 
 # ========== Macro ==========
 
-# (UNFINISHED) upcoming multiple macros support 
-MACROS= {
-    "mymacro": {
-        "path": r"",
-        "startkey": "",
-        "stopkey": "",
-    },
-
-    "macro2": {
-        "path": r"",
-        "startkey": "",
-        "stopkey": "",
-    },
-}
+### single macro settings only
 
 macro = ""
 # the macro to use
@@ -108,9 +95,11 @@ keyPresses = 1
 recordOnStart = True
 # default: True
 
+
 # (in development) use multimacro?
 enableMultipleMacros = True
 
+# (UNFINISHED) upcoming multiple macros support 
 MACROS = {
     "macro 2": {
         "path": r"",
