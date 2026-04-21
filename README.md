@@ -67,6 +67,7 @@ Feel free to also create pull requests.
  - [ ] Linux support
  - [ ] View RAM/CPU usage
  - [ ] Uploading files
+ - [ ] Update checks and automatic updates
  - [ ] Move to asynchronous 
  - [ ] Support for multiple macro .exes and launching them separately
  - [ ] De-spaghetti the code
