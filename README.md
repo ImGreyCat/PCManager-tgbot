@@ -30,21 +30,29 @@ You can download the rolling version of the code to try new features before rele
 
 1. **Download the source code**\
 Click the green Code button, then download ZIP to download the code.
+Alternatively, use Git to clone the repository:\
+```bash
+$ git clone https://github.com/ImGreyCat/PCManager-tgbot-dev
+```
    
 2. **Install ffmpeg**
-> **For Windows: download the build from gyan.dev (personally recommend this)**\
+> **For Windows: download the build from gyan.dev (recommended)**\
 > [Download this 7z archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) and extract it to C:\ffmpeg
 
 > **Add ffmpeg to PATH**\
-> Open Search, find and open "Edit the system environment variables", then add C:\ffmpeg\bin to the system Path variable.
+> Open Search, find and open "Edit the system environment variables", then add C:\ffmpeg\bin to the **system** Path variable.
 
 > **For Linux/macOS:**\
 > Install ffmpeg with your system's package manager.
 
 3. **Install Python**
 
-Visit https://www.python.org/downloads/windows/ to download and install Python.\
-Make sure to install the built-in library as well. 
+> **For Windows and macOS:**\
+> Visit https://www.python.org/downloads/ to download and install Python.\
+> Make sure to install the built-in library as well. 
+
+> **For Linux:**\
+> Use your distribution's package manager to install Python.
 
 4. **Install requirements**
 > **Automatic installation with pip**\
