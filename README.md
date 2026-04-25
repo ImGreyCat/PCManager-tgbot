@@ -29,10 +29,11 @@ You can download the rolling version of the code to try new features before rele
 > To start on these OSes, set bypassSystemCheck to True in the config file.
 
 1. **Download the source code**\
-Click the green Code button, then download ZIP to download the code.
-Alternatively, use Git to clone the repository:\
-```bash
-$ git clone https://github.com/ImGreyCat/PCManager-tgbot-dev
+Click the green Code button, then download ZIP to download the code.\
+
+Alternatively, use Git to clone the repository:
+```
+git clone https://github.com/ImGreyCat/PCManager-tgbot-dev
 ```
    
 2. **Install ffmpeg**
