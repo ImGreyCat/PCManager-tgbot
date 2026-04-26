@@ -59,7 +59,7 @@ else:
 
 # ======== version setup ========
 version = "rolling-developer"
-build = "699"
+build = "705"
 hostname = socket.gethostname()
 system = platform.system()
 release = platform.release()
@@ -323,50 +323,27 @@ Should the bot record a video on /startmacro?\
     }
 }
 
+macroManagementCommands = [
+    {"cmd": "launch",
+     "desc": strings[language]["launch_cmd"],
+     "func": "launchpad_func",
+     "admin": True},
 
-# CMD_DESCRIPTIONS = {
-#     "ru": {
-#         "start": "Приветственное сообщение",
-#         "launch": "Запустить .exe макроса",
-#         "alt_f4": "[✨ Новое] Закрыть приложение в фокусе",
-#         "minimize_all": "[✨ Новое] Свернуть все приложения",
-#         "startmacro": 'Нажать кнопку "старт"',
-#         "stopmacro": 'Нажать кнопку "стоп"',
-#         "keyboard": '[✨ Новое] Отправить клавишу на компьютер',
-#         "screenshot": "Сделать скриншот",
-#         "video": "Записать видео",
-#         "stop": "[✨ Новое] Выключить бота",
-#         "shutdown": "[✨ Новое] Выключить компьютер",
-#         "reboot": "[✨ Новое] Перезагрузить компьютер",
-#         "cancelshutdown": "[✨ Новое] Отменить перезагрузку/выключение",
-#         "settings": "[✨ Новое] Получить текущие настройки",
-#         "changemacro": "[✨ Новое] Изменить текущий макрос",
-#         "info": "Разная информация о боте",
-#     },
-#     "en": {
-#         "start": "Welcome message",
-#         "launch": "Launch macro .exe",
-#         "alt_f4": "[✨ New] Close focused app",
-#         "minimize_all": "[✨ New] Minimize all apps",
-#         "startmacro": "Send start key",
-#         "stopmacro": "Send stop key",
-#         "keyboard": "[✨ New] Send key",
-#         "screenshot": "Take a screenshot",
-#         "video": "Record a video",
-#         "stop": "[✨ New] Stop the bot",
-#         "shutdown": "[✨ New] Turn off PC",
-#         "reboot": "[✨ New] Reboot PC",
-#         "cancelshutdown": "[✨ New] Cancel pending shutdown",
-#         "settings": "[✨ New] View current settings",
-#         "changemacro": "[✨ New] Change current macro",
-#         "info": "Various info",
-#     }
-# }
+    {"cmd": "startmacro",
+     "desc": strings[language]["startmacro_cmd"],
+     "func": "startmacro_func",
+     "admin": False},
 
-# try:
-#     CMD_DESCRIPTIONS.update(customCMD_DESCRIPTIONS)
-# except:
-#     pass
+    {"cmd": "stopmacro",
+     "desc": strings[language]["stopmacro_cmd"],
+     "func": "stopmacro_func",
+     "admin": False},
+
+    {"cmd": "changemacro",
+     "desc": strings[language]["changemacro_cmd"],
+     "func": "changemacro_func",
+     "admin": True},
+]
 
 COMMANDS = [
     {"cmd": "start",
@@ -374,10 +351,10 @@ COMMANDS = [
      "func": "start_func",
      "admin": False},
     
-    {"cmd": "launch",
-     "desc": strings[language]["launch_cmd"],
-     "func": "launchpad_func",
-     "admin": True},
+    # {"cmd": "launch",
+    #  "desc": strings[language]["launch_cmd"],
+    #  "func": "launchpad_func",
+    #  "admin": True},
 
     {"cmd": "alt_f4",
      "desc": strings[language]["alt_f4_cmd"],
@@ -389,15 +366,15 @@ COMMANDS = [
      "func": "minimize_all_func",
      "admin": True},
     
-    {"cmd": "startmacro",
-     "desc": strings[language]["startmacro_cmd"],
-     "func": "startmacro_func",
-     "admin": False},
-    
-    {"cmd": "stopmacro",
-     "desc": strings[language]["stopmacro_cmd"],
-     "func": "stopmacro_func",
-     "admin": False},
+    # {"cmd": "startmacro",
+    #  "desc": strings[language]["startmacro_cmd"],
+    #  "func": "startmacro_func",
+    #  "admin": False},
+    #
+    # {"cmd": "stopmacro",
+    #  "desc": strings[language]["stopmacro_cmd"],
+    #  "func": "stopmacro_func",
+    #  "admin": False},
 
     {"cmd": "keyboard",
      "desc": strings[language]["keyboard_cmd"],
@@ -439,10 +416,10 @@ COMMANDS = [
      "func": "settings_func",
      "admin": False},
 
-    {"cmd": "changemacro",
-     "desc": strings[language]["changemacro_cmd"],
-     "func": "changemacro_func",
-     "admin": True},
+    # {"cmd": "changemacro",
+    #  "desc": strings[language]["changemacro_cmd"],
+    #  "func": "changemacro_func",
+    #  "admin": True},
 
     {"cmd": "info",
      "desc": strings[language]["info_cmd"],
@@ -450,6 +427,8 @@ COMMANDS = [
      "admin": False}
 ]
 
+if enableMacroModule == True:
+    COMMANDS.extend(macroManagementCommands)
 COMMANDS.extend(CUSTOM_CMDS)
 COMMANDS_LKUP = {c["cmd"]: c for c in COMMANDS}
 
@@ -485,7 +464,7 @@ print("Syncing command list...")
 bot.set_my_commands([telebot.types.BotCommand(c["cmd"], c["desc"]) for c in COMMANDS]) # creates command list for every cmd
 print("Synced!")
 
-# ------------------ basic functions ------------------  #
+# ------------------ helper functions ------------------  #
 
 # take a screenshot and send it to chat_id
 def take_screenshot(chat_id):
@@ -563,17 +542,17 @@ def get_time(offset=0):
     formatted_time = now.strftime("%I:%M:%S %p")
     return formatted_time # format and return
 
-
-# ------------------- helper functions -------------------
-
 # authenticates user, also gets their admin status
-def authenticate(user_id, target="do unknown action", adminOnly=False):
+def authenticate(user_id, target="do unknown action", adminOnly=False, alwaysAllow=False):
     isauser=False
     isanadmin=False
     if user_id in USERS:
         isauser=True
     if user_id in ADMINS:
         isanadmin=True
+    if alwaysAllow == True:
+        print(f"{user_id} requested to {target} (authentication not required)")
+        return isauser, isanadmin
     if adminOnly==False and (isauser==True):
         print(f"[AUTH] {user_id} requested to {target}")
         return True
@@ -792,7 +771,7 @@ def cancel_shutdown_func(message):
     global shtdwntime
     global stopTimer
     
-    if not authenticate(message.from_user.id,"cancel pending RPC/bot shutdown",COMMANDS_LKUP["cancelshutdown"]["admin"]):
+    if not authenticate(message.from_user.id,"cancel pending shutdown",COMMANDS_LKUP["cancelshutdown"]["admin"]):
         return
     if isPendingShutdown == False:
         print(Fore.YELLOW+f"[WARNING] {message.from_user.id} tried cancelling a shutdown, but there isn't one pending")
@@ -824,6 +803,11 @@ def changemacro_func(message):
     startkey = MACROS[macro]["startKey"]
     stopkey = MACROS[macro]["stopKey"]
     print(f"Set current macro to {macro}")
+
+def help_func(message):
+    isuser, isadmin = authenticate(message.from_user.id,"to get the help message",alwaysAllow=True)
+    print(f"User: {isuser}, Admin: {isadmin}")
+
 
 # --------- bind all commands so they work --------- #
 
