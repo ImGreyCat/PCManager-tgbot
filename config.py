@@ -73,6 +73,9 @@ ADMINS = {
 
 # ========== Macro ==========
 
+# Whether to use the macro module or not
+enableMacroModule = True
+
 ### single macro settings only
 
 macro = ""
