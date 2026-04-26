@@ -97,11 +97,11 @@ recordOnStart = True
 
 
 # (in development) use multimacro?
-enableMultipleMacros = True
+enableMultipleMacros = False
 
-# (UNFINISHED) upcoming multiple macros support 
+# macro list
 MACROS = {
-    "macro 2": {
+    "macro 1": {
         "path": r"",
         "startKey": "Win",
         "stopKey": "Space",
