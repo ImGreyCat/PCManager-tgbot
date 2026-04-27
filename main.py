@@ -37,14 +37,14 @@ CUSTOM_CMDS=[]
 init(autoreset=True)
 
 if useCustomCommands is True:
-    print("[DEVELOPER] Importing custom commands")
+    print("[DEV] Importing custom commands")
     try:
         from custom import *
     except Exception as e:
         print(Fore.RED+f"[ERROR] Failed to import custom commands ({e})!")
         CUSTOM_CMDS=[]
     else:
-        print(Fore.BLUE+"[DEVELOPER] Imported custom commands")
+        print(Fore.BLUE+"[DEV] Imported custom commands")
 
 try:
     from locales import strings
@@ -54,8 +54,8 @@ except ImportError:
     customCMD_DESCRIPTIONS = {}
 else:
     if not strings or not customCMD_DESCRIPTIONS:
-        print(Fore.BLUE+"[DEVELOPER] No custom languages found")
-    print(Fore.BLUE+f"[DEVELOPER] Imported custom languages: {', '.join(strings)}")
+        print(Fore.BLUE+"[DEV] No custom languages found")
+    print(Fore.BLUE+f"[DEV] Imported custom languages: {', '.join(strings)}")
 
 # ======== version setup ========
 version = "rolling-developer"
@@ -87,7 +87,7 @@ USERS.update(ADMINS)
 # setup the testmode changes
 if testmode == True:
     bypassSystemCheck = True
-    print(Fore.YELLOW+"[WARNING] testmode is on. see the config file to learn more about what it does")
+    print(Fore.YELLOW+"[WARN] testmode is on. see the config file to learn more about what it does")
     MacroPath = r"C:\Windows\System32\calc.exe"
     shtdwndelay = shtdwndelay*2
     SHUTDOWN_PATH = rf"C:\Windows\System32\shutdown.exe -s -t {shtdwndelay}"
@@ -663,7 +663,7 @@ def keyboard_func(message):
     except IndexError:
         pass
         bot.reply_to(message,strings[language]["nokey_msg"])
-        print(Fore.YELLOW+f"[WARNING] Key not specified")
+        print(Fore.YELLOW+f"[WARN] Key not specified")
         return
     
     if keyToSend is not None:
@@ -672,7 +672,7 @@ def keyboard_func(message):
         except ValueError:
             pass
             bot.reply_to(message,strings[language]["invalidkey_msg"])
-            print(Fore.YELLOW+f"[WARNING] Invalid key specified")
+            print(Fore.YELLOW+f"[WARN] Invalid key specified")
             return
         bot.reply_to(message,strings[language]["sentkey_msg"].format(SENTKEY=keyToSend))
 
@@ -715,7 +715,7 @@ def stop_func(message):
     if not authenticate(message.from_user.id,"stop the bot",COMMANDS_LKUP["stop"]["admin"]):
         return
     if isPendingShutdown == True:
-        print(Fore.YELLOW+"[DEBUG] [WARNING] user",message.from_user.id,"tried initiating a bot stop, but there's already a",pendingshutdowntype,"at",shtdwntime,"pending")
+        print(Fore.YELLOW+"[DEBUG] [WARN] user",message.from_user.id,"tried initiating a bot stop, but there's already a",pendingshutdowntype,"at",shtdwntime,"pending")
         bot.reply_to(message, strings[language]["alrpending_msg"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
         return
     stopTimer = threading.Timer(shtdwndelay, stop_bot)
@@ -735,7 +735,7 @@ def shutdown_func(message):
     if not authenticate(message.from_user.id,"turn off the RPC",COMMANDS_LKUP["shutdown"]["admin"]):
         return
     if isPendingShutdown == True:
-        print(Fore.YELLOW+f"[DEBUG] [WARNING] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
+        print(Fore.YELLOW+f"[DEBUG] [WARN] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
         bot.reply_to(message, strings[language]["alrpending_msg"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
         return
     subprocess.Popen(SHUTDOWN_PATH)
@@ -754,7 +754,7 @@ def reboot_func(message):
     if not authenticate(message.from_user.id,"reboot the RPC",COMMANDS_LKUP["reboot"]["admin"]):
         return
     if isPendingShutdown == True:
-        print(Fore.YELLOW+f"[DEBUG] [WARNING] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
+        print(Fore.YELLOW+f"[DEBUG] [WARN] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
         bot.reply_to(message, strings[language]["alrpending_msg"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
         return
     subprocess.Popen(REBOOT_PATH)
@@ -774,7 +774,7 @@ def cancel_shutdown_func(message):
     if not authenticate(message.from_user.id,"cancel pending shutdown",COMMANDS_LKUP["cancelshutdown"]["admin"]):
         return
     if isPendingShutdown == False:
-        print(Fore.YELLOW+f"[WARNING] {message.from_user.id} tried cancelling a shutdown, but there isn't one pending")
+        print(Fore.YELLOW+f"[WARN] {message.from_user.id} tried cancelling a shutdown, but there isn't one pending")
         bot.reply_to(message, strings[language]["shtdwnnotpending_msg"], parse_mode="Markdown")
         return
         
