@@ -49,8 +49,8 @@ shtdwndelay=60
 # the following users will be able to access the bot and its commands
 # admins will have all permissions of a regular user and will also be able to run admin-only commands
 # to add somebody here, put in their telegram user id followed by a colon and their name in brackets, then a commma 
-# [!] note 1: the bot will refer to the users using the name you put in, not their telegram name
-# [!] note 2: don't add a user both to the users list and the admins list, pick just one
+# [!] note 1: the bot will refer to users using the name you put in, not their telegram name
+# [!] note 2: adding a user to both the admin list and user list will result in the admin entry having priority
 # it will also send all of them the Bot Online notification if set up to do so
 #
 # here's an example of a user setup with 2 users and 1 admin:
