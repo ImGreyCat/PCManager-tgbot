@@ -26,7 +26,8 @@ proxyPassword = ""
 # ========== Regional ==========
 
 # language to use
-# available languages are en (english) and ru (russian)
+# official available languages are en (english) and ru (russian)
+# print messages are always english as of now
 language = ""
 
 # use 12-hour or 24-hour time
@@ -40,7 +41,7 @@ videoLength = 15
 # default: 15
 
 # how long to wait in seconds before stopping the bot or shutting down/rebooting
-shtdwndelay=60
+shtdwndelay = 60
 # default: 60
 # 0 = instant
 
@@ -72,9 +73,6 @@ ADMINS = {
 }
 
 # ========== Macro ==========
-
-# Whether to use the macro module or not
-enableMacroModule = True
 
 ### single macro settings only
 
@@ -118,6 +116,19 @@ MACROS = {
 }
 
 defaultMacro="macro 1"
+
+# ========== Commands ==========
+
+# Toggle all macro-related commands
+enableMacroModule = True
+# default: True
+
+# Toggle screenshot and video commands
+enableCaptures = True
+# default: True
+
+# Toggle PC and bot management commands (/stop, /shutdown, /reboot)
+enableShutdowns = True
 
 # ========== Developer ==========
 

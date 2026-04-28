@@ -260,7 +260,7 @@ strings = {
         "msg.BON": "🟢 Now online!\nPC: *{HOSTNAME}*\nTime: *{NOW}*",
         "msg.403": "❌ You do not have permission to use the bot.\nIf you think I'm mistaken, please contact the admin.",
         "msg.notanadmin": "❌ Insufficient permissions. Only admins can use this command.",
-        "msg.pendingstop": "*🛑 Bot stop scheduled in {SHTDWNDELAY} seconds!*\n(!) The bot will stop working, but the RPC will keep running.\n\nStopping at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "msg.pendingstop": "*🛑 Bot stop scheduled in {SHTDWNDELAY} seconds!*\n(!) The bot will stop working, but the computer will keep running.\n\nStopping at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
         "msg.pendingshutdown": "*💤 Computer shutdown scheduled in {SHTDWNDELAY} seconds!!*\n(!!!) The bot will stop working after shutdown!\n\nShutting down at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
         "msg.pendingreboot": "*🔄 Computer reboot scheduled in {SHTDWNDELAY} seconds!*\n(!!) The bot may stop working after reboot\n\nRebooting at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
         "msg.shtdwnnotpending": "As far as I can see, the computer doesn't have a scheduled shutdown...",
@@ -367,6 +367,40 @@ macroManagementCommands = [
      "admin": True},
 ]
 
+captureCommands = [
+    {"cmd": "screenshot",
+     "desc": strings[language]["cmddesc.screenshot"],
+     "func": "screenshot_func",
+     "admin": False},
+
+    {"cmd": "video",
+     "desc": strings[language]["cmddesc.video"],
+     "func": "video_func",
+     "admin": False},
+]
+
+shutdownCommands = [
+    {"cmd": "stop",
+     "desc": strings[language]["cmddesc.stop"],
+     "func": "stop_func",
+     "admin": True},
+
+    {"cmd": "shutdown",
+     "desc": strings[language]["cmddesc.shutdown"],
+     "func": "shutdown_func",
+     "admin": True},
+
+    {"cmd": "reboot",
+     "desc": strings[language]["cmddesc.reboot"],
+     "func": "reboot_func",
+     "admin": True},
+
+    {"cmd": "cancelshutdown",
+     "desc": strings[language]["cmddesc.cancelshutdown"],
+     "func": "cancel_shutdown_func",
+     "admin": True},
+]
+
 COMMANDS = [
     {"cmd": "start",
      "desc": strings[language]["cmddesc.start"],
@@ -388,35 +422,35 @@ COMMANDS = [
      "func": "keyboard_func",
      "admin": False},
     
-    {"cmd": "screenshot",
-     "desc": strings[language]["cmddesc.screenshot"],
-     "func": "screenshot_func",
-     "admin": False},
+    # {"cmd": "screenshot",
+    #  "desc": strings[language]["cmddesc.screenshot"],
+    #  "func": "screenshot_func",
+    #  "admin": False},
+    #
+    # {"cmd": "video",
+    #  "desc": strings[language]["cmddesc.video"],
+    #  "func": "video_func",
+    #  "admin": False},
 
-    {"cmd": "video",
-     "desc": strings[language]["cmddesc.video"],
-     "func": "video_func",
-     "admin": False},
-
-    {"cmd": "stop",
-     "desc": strings[language]["cmddesc.stop"],
-     "func": "stop_func",
-     "admin": True},
-
-    {"cmd": "shutdown",
-     "desc": strings[language]["cmddesc.shutdown"],
-     "func": "shutdown_func",
-     "admin": True},
-
-    {"cmd": "reboot",
-     "desc": strings[language]["cmddesc.reboot"],
-     "func": "reboot_func",
-     "admin": True},
-
-    {"cmd": "cancelshutdown",
-     "desc": strings[language]["cmddesc.cancelshutdown"],
-     "func": "cancel_shutdown_func",
-     "admin": True},
+    # {"cmd": "stop",
+    #  "desc": strings[language]["cmddesc.stop"],
+    #  "func": "stop_func",
+    #  "admin": True},
+    #
+    # {"cmd": "shutdown",
+    #  "desc": strings[language]["cmddesc.shutdown"],
+    #  "func": "shutdown_func",
+    #  "admin": True},
+    #
+    # {"cmd": "reboot",
+    #  "desc": strings[language]["cmddesc.reboot"],
+    #  "func": "reboot_func",
+    #  "admin": True},
+    #
+    # {"cmd": "cancelshutdown",
+    #  "desc": strings[language]["cmddesc.cancelshutdown"],
+    #  "func": "cancel_shutdown_func",
+    #  "admin": True},
 
     {"cmd": "settings",
      "desc": strings[language]["cmddesc.settings"],
@@ -436,6 +470,13 @@ COMMANDS = [
 
 if enableMacroModule == True:
     COMMANDS.extend(macroManagementCommands)
+if enableCaptures == True:
+    COMMANDS.extend(captureCommands)
+if enableShutdowns == True:
+    COMMANDS.extend(shutdownCommands)
+if enableCaptures != True:
+    recordOnStart=False
+
 COMMANDS.extend(CUSTOM_CMDS)
 COMMANDS_LKUP = {c["cmd"]: c for c in COMMANDS}
 
@@ -757,7 +798,7 @@ def reboot_func(message):
     global pendingshutdowntype
     global shtdwntime
     
-    if not authenticate(message.from_user.id,"reboot the RPC",COMMANDS_LKUP["reboot"]["admin"]):
+    if not authenticate(message.from_user.id,"reboot the computer",COMMANDS_LKUP["reboot"]["admin"]):
         return
     if isPendingShutdown == True:
         print(Fore.YELLOW+f"[WARN] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
@@ -811,7 +852,7 @@ def changemacro_func(message):
     print(f"Set current macro to {macro}")
 
 def help_func(message):
-    isuser, isadmin = authenticate(message.from_user.id,"to get the help message",alwaysAllow=True)
+    isuser, isadmin = authenticate(message.from_user.id,"get the help message",alwaysAllow=True)
     print(f"User: {isuser}, Admin: {isadmin}")
 
 
