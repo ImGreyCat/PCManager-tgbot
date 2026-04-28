@@ -37,7 +37,7 @@ CUSTOM_CMDS=[]
 init(autoreset=True)
 
 if useCustomCommands is True:
-    print("[DEV] Importing custom commands")
+    print(Fore.BLUE+"[DEV] Importing custom commands")
     try:
         from custom import *
     except Exception as e:
@@ -94,7 +94,7 @@ if testmode == True:
     REBOOT_PATH = rf"C:\Windows\System32\shutdown.exe -r -t {shtdwndelay}"
     
 if not system == "Windows" and bypassSystemCheck == False: # check the os
-    print(Fore.RED + f"[ERROR] Cannot continue on your OS: {system}. To bypass this, set bypassSystemCheck to True in the config file.")
+    print(Fore.RED + f"[ERROR] Cannot continue on your OS: {system}. To bypass this, set bypassSystemCheck to True in the config file.\nPlease note that doing this is not officially supported and will cause issues.")
     input("Press Enter to exit...")
     raise SystemExit
 
@@ -126,31 +126,32 @@ strings = {
         False: "выкл.",
         "unknown": "неизвестно",
         "done": "Готово!",
-        "startedEXE_msg": "🔌 .exe макроса запущен!",
-        "sendingAltF4_msg": "Закрываю приложение спереди...",
-        "sentAltF4_msg": "✅ Alt+F4 успешно отправлено!",
-        "minimizingAll_msg": "Сворачиваю все приложения...",
-        "startsent_vid_msg": "▶️ Клавиша старта отправлена, записываю видео...",
-        "startsent_novid_msg": "▶️ Клавиша старта отправлена!",
-        "stopsent_msg": "⏹ Клавиша стоп отправлена!",
-        "nokey_msg": "❌ Не указана клавиша.\nСинтаксис: /keyboard <клавиша>",
-        "invalidkey_msg": "❌ Неверно указано клавиша.\nСинтаксис: /keyboard <клавиша>\nКлавиши: a-z, 0-9, ctrl, alt, win, shift, space, enter",
-        "sentkey_msg": "✅ Клавиша {SENTKEY} успешно отправлена!",
-        "takingscrshot_msg": "Делаю скриншот...",
-        "recordingvid_msg": "Записываю видео...",
-        "chkping_msg": "Быстренько проверяю пинг с Telegram API...",
-        "scrshot_capt": "[{NOW}] Скриншот",
-        "vid_capt": "[{NOW}] Видео",
-        "BON_msg": "🟢 Бот онлайн!\nПК: *{HOSTNAME}*\nВремя: *{NOW}*",
-        "err403msg": "❌ У вас нет разрешения на управление ботом.\nЕсли вы считаете, что я ошибаюсь, пожалуйста, напишите админу.",
-        "notanadmin_msg": "❌ Недостаточно прав. Только администраторы могут использовать эту команду.",
-        "pendingstop_msg": "*🛑 Запланирована остановка бота через {SHTDWNDELAY} секунд!*\n(!) Бот перестанет работать, но компьютер останется включённым.\n\nОстановка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
-        "pendingshutdown_msg": "*💤 Запланировано выключение компьютера через {SHTDWNDELAY} секунд!!*\n(!!!) После выключения бот перестанет работать!\n\nВыключение в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
-        "pendingreboot_msg": "*🔄 Запланирована перезагрузка компьютера через {SHTDWNDELAY} секунд!*\n(!!) После перезагрузки бот может перестать работать\n\nПерезагрузка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
-        "shtdwnnotpending_msg": "Насколько мне известно, компьютер выключаться не собирался...",
-        "alrpending_msg": "*Ошибка*: уже планируется *{PENDINGSHUTDOWNTYPE}* в *{SHTDWNTIME}*.\nНеобходимо сначала отменить это действие: */cancelshutdown*",
-        "cnclpendingshutdown": "✅ Успешно отменено запланированное действие: {TYPE}.",
-        "welcome_msg": "\
+        "msg.startedEXE": "🔌 .exe макроса запущен!",
+        "msg.sendingAltF4": "Закрываю приложение спереди...",
+        "msg.sentAltF4": "✅ Alt+F4 успешно отправлено!",
+        "msg.minimizingAll": "Сворачиваю все приложения...",
+        "msg.startsent_vid": "▶️ Клавиша старта отправлена, записываю видео...",
+        "msg.startsent_novid": "▶️ Клавиша старта отправлена!",
+        "msg.stopsent": "⏹ Клавиша стоп отправлена!",
+        "msg.nokey": "❌ Не указана клавиша.\nСинтаксис: /keyboard <клавиша>",
+        "msg.invalidkey": "❌ Неверно указано клавиша.\nСинтаксис: /keyboard <клавиша>\nКлавиши: a-z, 0-9, ctrl, alt, win, shift, space, enter",
+        "msg.sentkey": "✅ Клавиша {SENTKEY} успешно отправлена!",
+        "msg.sendingWinD": "Отправляю Win+D...",
+        "msg.takingscreenshot": "Делаю скриншот...",
+        "msg.recordingvideo": "Записываю видео...",
+        "msg.checkingping": "Быстренько проверяю пинг с Telegram API...",
+        "caption.screenshot": "[{NOW}] Скриншот",
+        "caption.video": "[{NOW}] Видео",
+        "msg.BON": "🟢 Бот онлайн!\nПК: *{HOSTNAME}*\nВремя: *{NOW}*",
+        "msg.403": "❌ У вас нет разрешения на управление ботом.\nЕсли вы считаете, что я ошибаюсь, пожалуйста, напишите админу.",
+        "msg.notanadmin": "❌ Недостаточно прав. Только администраторы могут использовать эту команду.",
+        "msg.pendingstop": "*🛑 Запланирована остановка бота через {SHTDWNDELAY} секунд!*\n(!) Бот перестанет работать, но компьютер останется включённым.\n\nОстановка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
+        "msg.pendingshutdown": "*💤 Запланировано выключение компьютера через {SHTDWNDELAY} секунд!!*\n(!!!) После выключения бот перестанет работать!\n\nВыключение в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
+        "msg.pendingreboot": "*🔄 Запланирована перезагрузка компьютера через {SHTDWNDELAY} секунд!*\n(!!) После перезагрузки бот может перестать работать\n\nПерезагрузка в: *{SHTDWNTIME}*\nОтменить: */cancelshutdown*",
+        "msg.shtdwnnotpending": "Насколько мне известно, компьютер выключаться не собирался...",
+        "msg.alrpending": "*Ошибка*: уже планируется *{PENDINGSHUTDOWNTYPE}* в *{SHTDWNTIME}*.\nНеобходимо сначала отменить это действие: */cancelshutdown*",
+        "msg.cnclpendingshutdown": "✅ Успешно отменено запланированное действие: {TYPE}.",
+        "msg.welcome": "\
 Здравствуйте, {NAME}! ✅ Бот активен и вы имеете права на управление.\n\
 Доступные команды:\n\
 /start - получить это сообщение\n\
@@ -160,7 +161,7 @@ strings = {
 /stopmacro - послать стоп\n\
 /keyboard - послать клавишу на компьютер\n\
 /screenshot - сделать скриншот\n\
-/video - записать видео на 15 секунд\n\
+/video - записать видео\n\
 /stop - остановить бота\n\
 /shutdown - выключить компьютер\n\
 /reboot - перезагрузить компьютер\n\
@@ -169,7 +170,7 @@ strings = {
 /info - посмотреть разную информацию о боте\n\n\
 \
 Сделано @ImGreyCat с <3",
-        "info_msg": "\
+        "msg.info": "\
 *ℹ️ Информация и статус*\n\n\
 \
 *🔑 Авторизация*\n\
@@ -191,7 +192,7 @@ strings = {
 
         # ------------
 
-        "settings_msg": "\
+        "msg.settings": "\
 *⚙️ Настройки бота*\n\
 Их можно изменить в файле конфигурации.\n\n\
 \
@@ -208,23 +209,24 @@ strings = {
 > 🎥 Запись при старте: *{RECONSTARTISON}*\n\
 Будет ли бот записывать видео при /startmacro?\
 ",
-        "updatedcmds_msg": "Список команд обновлён успешно.\nВнимание! Вы можете не увидеть изменения, пока полностью не перезапустите Telegram.",
-        "start_cmd": "Приветственное сообщение",
-        "launch_cmd": "Запустить .exe макроса",
-        "alt_f4_cmd": "[✨ Новое] Закрыть приложение в фокусе",
-        "minimize_all_cmd": "[✨ Новое] Свернуть все приложения",
-        "startmacro_cmd": 'Нажать кнопку "старт"',
-        "stopmacro_cmd": 'Нажать кнопку "стоп"',
-        "keyboard_cmd": '[✨ Новое] Отправить клавишу на компьютер',
-        "screenshot_cmd": "Сделать скриншот",
-        "video_cmd": "Записать видео",
-        "stop_cmd": "[✨ Новое] Выключить бота",
-        "shutdown_cmd": "[✨ Новое] Выключить компьютер",
-        "reboot_cmd": "[✨ Новое] Перезагрузить компьютер",
-        "cancelshutdown_cmd": "[✨ Новое] Отменить перезагрузку/выключение",
-        "settings_cmd": "[✨ Новое] Получить текущие настройки",
-        "changemacro_cmd": "[✨ Новое] Изменить текущий макрос",
-        "info_cmd": "Разная информация о боте",
+        "msg.updatedcmds": "Список команд обновлён успешно.\nВнимание! Вы можете не увидеть изменения, пока полностью не перезапустите Telegram.",
+        "cmddesc.start": "Приветственное сообщение",
+        "cmddesc.launch": "Запустить .exe макроса",
+        "cmddesc.alt_f4": "[✨ Новое] Закрыть приложение в фокусе",
+        "cmddesc.minimize_all": "[✨ Новое] Свернуть все приложения",
+        "cmddesc.startmacro": 'Нажать кнопку "старт"',
+        "cmddesc.stopmacro": 'Нажать кнопку "стоп"',
+        "cmddesc.keyboard": '[✨ Новое] Отправить клавишу на компьютер',
+        "cmddesc.screenshot": "Сделать скриншот",
+        "cmddesc.video": "Записать видео",
+        "cmddesc.stop": "[✨ Новое] Выключить бота",
+        "cmddesc.shutdown": "[✨ Новое] Выключить компьютер",
+        "cmddesc.reboot": "[✨ Новое] Перезагрузить компьютер",
+        "cmddesc.cancelshutdown": "[✨ Новое] Отменить перезагрузку/выключение",
+        "cmddesc.settings": "[✨ Новое] Получить текущие настройки",
+        "cmddesc.changemacro": "[✨ Новое] Изменить текущий макрос",
+        "cmddesc.info": "Разная информация о боте",
+        "cmddesc.help": "[✨ Новое] Справка по командам",
     },
 
     # ENGLISH
@@ -241,30 +243,49 @@ strings = {
         False: "off",
         "unknown": "unknown",
         "done": "Done!",
-        "startedEXE_msg": "🔌 Started macro .exe!",
-        "sendingAltF4_msg": "Closing focused app...",
-        "sentAltF4_msg": "✅ Sent Alt+F4 successfully!",
-        "startsent_vid_msg": "▶️ Start key sent, recording a video...",
-        "startsent_novid_msg": "▶️ Start key sent!",
-        "stopsent_msg": "⏹ Stop key sent!",
-        "nokey_msg": "❌ No key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
-        "invalidkey_msg": "❌ Invalid key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
-        "sentkey_msg": "✅ Sent key {SENTKEY} successfully!",
-        "takingscrshot_msg": "Taking a screenshot...",
-        "chkping_msg": "Pinging the Telegram API real quick...",
-        "scrshot_capt": "[{NOW}] Screenshot",
-        "vid_capt": "[{NOW}] Video",
-        "BON_msg": "🟢 Now online!\nPC: *{HOSTNAME}*\nTime: *{NOW}*",
-        "err403msg": "❌ You do not have permission to use the bot.\nIf you think I'm mistaken, please contact the admin.",
-        "notanadmin_msg": "❌ Insufficient permissions. Only admins can use this command.",
-        "pendingstop_msg": "*🛑 Bot stop scheduled in {SHTDWNDELAY} seconds!*\n(!) The bot will stop working, but the RPC will keep running.\n\nStopping at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
-        "pendingshutdown_msg": "*💤 Computer shutdown scheduled in {SHTDWNDELAY} seconds!!*\n(!!!) The bot will stop working after shutdown!\n\nShutting down at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
-        "pendingreboot_msg": "*🔄 Computer reboot scheduled in {SHTDWNDELAY} seconds!*\n(!!) The bot may stop working after reboot\n\nRebooting at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
-        "shtdwnnotpending_msg": "As far as I can see, the computer doesn't have a scheduled shutdown...",
-        "alrpending_msg": "*Error*: there's already a *{PENDINGSHUTDOWNTYPE}* pending at *{SHTDWNTIME}*.\nTo schedule a shutdown, please cancel this one first: */cancelshutdown*",
-        "cnclpendingshutdown": "✅ Cancelled pending {TYPE} successfully.",
-        "welcome_msg": "null",
-        "info_msg": "\
+        "msg.startedEXE": "🔌 Started macro .exe!",
+        "msg.sendingAltF4": "Closing focused app...",
+        "msg.sentAltF4": "✅ Sent Alt+F4 successfully!",
+        "msg.startsent_vid": "▶️ Start key sent, recording a video...",
+        "msg.startsent_novid": "▶️ Start key sent!",
+        "msg.stopsent": "⏹ Stop key sent!",
+        "msg.nokey": "❌ No key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
+        "msg.invalidkey": "❌ Invalid key specified.\nSyntax: /keyboard <key>\nAvailable keys: a-z, 0-9, ctrl, alt, win, shift, space, enter",
+        "msg.sentkey": "✅ Sent key {SENTKEY} successfully!",
+        "msg.sendingWinD": "Sending Win+D...",
+        "msg.takingscreenshot": "Taking a screenshot...",
+        "msg.checkingping": "Pinging the Telegram API real quick...",
+        "caption.screenshot": "[{NOW}] Screenshot",
+        "caption.video": "[{NOW}] Video",
+        "msg.BON": "🟢 Now online!\nPC: *{HOSTNAME}*\nTime: *{NOW}*",
+        "msg.403": "❌ You do not have permission to use the bot.\nIf you think I'm mistaken, please contact the admin.",
+        "msg.notanadmin": "❌ Insufficient permissions. Only admins can use this command.",
+        "msg.pendingstop": "*🛑 Bot stop scheduled in {SHTDWNDELAY} seconds!*\n(!) The bot will stop working, but the RPC will keep running.\n\nStopping at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "msg.pendingshutdown": "*💤 Computer shutdown scheduled in {SHTDWNDELAY} seconds!!*\n(!!!) The bot will stop working after shutdown!\n\nShutting down at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "msg.pendingreboot": "*🔄 Computer reboot scheduled in {SHTDWNDELAY} seconds!*\n(!!) The bot may stop working after reboot\n\nRebooting at: *{SHTDWNTIME}*\nCancel: */cancelshutdown*",
+        "msg.shtdwnnotpending": "As far as I can see, the computer doesn't have a scheduled shutdown...",
+        "msg.alrpending": "*Error*: there's already a *{PENDINGSHUTDOWNTYPE}* pending at *{SHTDWNTIME}*.\nTo schedule a shutdown, please cancel this one first: */cancelshutdown*",
+        "msg.cnclpendingshutdown": "✅ Cancelled pending {TYPE} successfully.",
+        "msg.welcome": "\
+Hey there {NAME}! ✅ The bot is online and you have permission to use it.\n\
+Commands:\n\
+/start - see this message\n\
+/launch - launch macro .exe\n\
+/alt_f4 - close focused app\n\
+/startmacro - send start key\n\
+/stopmacro - send stop key\n\
+/keyboard - send a key of your choice\n\
+/screenshot - take a screenshot\n\
+/video - record a video\n\
+/stop - stop bot\n\
+/shutdown - shutdown pc\n\
+/reboot - reboot pc\n\
+/cancelshutdown - cancel pending shutdown\n\
+/settings - view current settings\n\
+/info - get various info\n\n\
+\
+Made by @ImGreyCat with <3",
+        "msg.info": "\
 *ℹ️ Info and status*\n\n\
 \
 *🔑 Authorization*\n\
@@ -286,7 +307,7 @@ Startup time: *{TOOKTOSTART} sec*\n\
 
         # ------------
 
-        "settings_msg": "\
+        "msg.settings": "\
 *⚙️ Bot settings*\n\
 You can change these in the configuration file.\n\n\
 \
@@ -303,128 +324,114 @@ The bot will wait for this amount of seconds before shutdown.\n\n\
 🡒 🎥 Record on start: *{RECONSTARTISON}*\n\
 Should the bot record a video on /startmacro?\
 ",
-        "updatedcmds_msg": "Commands succesfully refreshed.\nPlease note that you might need to fully restart Telegram for the changes to show!",
-        "start_cmd": "Welcome message",
-        "launch_cmd": "Launch macro .exe",
-        "alt_f4_cmd": "[✨ New] Close focused app",
-        "minimize_all_cmd": "[✨ New] Minimize all apps",
-        "startmacro_cmd": "Send start key",
-        "stopmacro_cmd": "Send stop key",
-        "keyboard_cmd": "[✨ New] Send key",
-        "screenshot_cmd": "Take a screenshot",
-        "video_cmd": "Record a video",
-        "stop_cmd": "[✨ New] Stop the bot",
-        "shutdown_cmd": "[✨ New] Turn off PC",
-        "reboot_cmd": "[✨ New] Reboot PC",
-        "cancelshutdown_cmd": "[✨ New] Cancel pending shutdown",
-        "settings_cmd": "[✨ New] View current settings",
-        "changemacro_cmd": "[✨ New] Change current macro",
-        "info_cmd": "Various info",
+        "msg.updatedcmds": "Commands succesfully refreshed.\nPlease note that you might need to fully restart Telegram for the changes to show!",
+        "cmddesc.start": "Welcome message",
+        "cmddesc.launch": "Launch macro .exe",
+        "cmddesc.alt_f4": "[✨ New] Close focused app",
+        "cmddesc.minimize_all": "[✨ New] Minimize all apps",
+        "cmddesc.startmacro": "Send start key",
+        "cmddesc.stopmacro": "Send stop key",
+        "cmddesc.keyboard": "[✨ New] Send key",
+        "cmddesc.screenshot": "Take a screenshot",
+        "cmddesc.video": "Record a video",
+        "cmddesc.stop": "[✨ New] Stop the bot",
+        "cmddesc.shutdown": "[✨ New] Turn off PC",
+        "cmddesc.reboot": "[✨ New] Reboot PC",
+        "cmddesc.cancelshutdown": "[✨ New] Cancel pending shutdown",
+        "cmddesc.settings": "[✨ New] View current settings",
+        "cmddesc.changemacro": "[✨ New] Change current macro",
+        "cmddesc.info": "Various info",
+        "cmddesc.help": "[✨ New] Command help",
     }
 }
 
 macroManagementCommands = [
     {"cmd": "launch",
-     "desc": strings[language]["launch_cmd"],
+     "desc": strings[language]["cmddesc.launch"],
      "func": "launchpad_func",
      "admin": True},
 
     {"cmd": "startmacro",
-     "desc": strings[language]["startmacro_cmd"],
+     "desc": strings[language]["cmddesc.startmacro"],
      "func": "startmacro_func",
      "admin": False},
 
     {"cmd": "stopmacro",
-     "desc": strings[language]["stopmacro_cmd"],
+     "desc": strings[language]["cmddesc.stopmacro"],
      "func": "stopmacro_func",
      "admin": False},
 
     {"cmd": "changemacro",
-     "desc": strings[language]["changemacro_cmd"],
+     "desc": strings[language]["cmddesc.changemacro"],
      "func": "changemacro_func",
      "admin": True},
 ]
 
 COMMANDS = [
     {"cmd": "start",
-     "desc": strings[language]["start_cmd"],
+     "desc": strings[language]["cmddesc.start"],
      "func": "start_func",
      "admin": False},
-    
-    # {"cmd": "launch",
-    #  "desc": strings[language]["launch_cmd"],
-    #  "func": "launchpad_func",
-    #  "admin": True},
 
     {"cmd": "alt_f4",
-     "desc": strings[language]["alt_f4_cmd"],
+     "desc": strings[language]["cmddesc.alt_f4"],
      "func": "closeapp_func",
      "admin": True},
 
     {"cmd": "minimize_all",
-     "desc": strings[language]["minimize_all_cmd"],
+     "desc": strings[language]["cmddesc.minimize_all"],
      "func": "minimize_all_func",
      "admin": True},
-    
-    # {"cmd": "startmacro",
-    #  "desc": strings[language]["startmacro_cmd"],
-    #  "func": "startmacro_func",
-    #  "admin": False},
-    #
-    # {"cmd": "stopmacro",
-    #  "desc": strings[language]["stopmacro_cmd"],
-    #  "func": "stopmacro_func",
-    #  "admin": False},
 
     {"cmd": "keyboard",
-     "desc": strings[language]["keyboard_cmd"],
+     "desc": strings[language]["cmddesc.keyboard"],
      "func": "keyboard_func",
      "admin": False},
     
     {"cmd": "screenshot",
-     "desc": strings[language]["screenshot_cmd"],
+     "desc": strings[language]["cmddesc.screenshot"],
      "func": "screenshot_func",
      "admin": False},
 
     {"cmd": "video",
-     "desc": strings[language]["video_cmd"],
+     "desc": strings[language]["cmddesc.video"],
      "func": "video_func",
      "admin": False},
 
     {"cmd": "stop",
-     "desc": strings[language]["stop_cmd"],
+     "desc": strings[language]["cmddesc.stop"],
      "func": "stop_func",
      "admin": True},
 
     {"cmd": "shutdown",
-     "desc": strings[language]["shutdown_cmd"],
+     "desc": strings[language]["cmddesc.shutdown"],
      "func": "shutdown_func",
      "admin": True},
 
     {"cmd": "reboot",
-     "desc": strings[language]["reboot_cmd"],
+     "desc": strings[language]["cmddesc.reboot"],
      "func": "reboot_func",
      "admin": True},
 
     {"cmd": "cancelshutdown",
-     "desc": strings[language]["cancelshutdown_cmd"],
+     "desc": strings[language]["cmddesc.cancelshutdown"],
      "func": "cancel_shutdown_func",
      "admin": True},
 
     {"cmd": "settings",
-     "desc": strings[language]["settings_cmd"],
+     "desc": strings[language]["cmddesc.settings"],
      "func": "settings_func",
      "admin": False},
 
-    # {"cmd": "changemacro",
-    #  "desc": strings[language]["changemacro_cmd"],
-    #  "func": "changemacro_func",
-    #  "admin": True},
-
     {"cmd": "info",
-     "desc": strings[language]["info_cmd"],
+     "desc": strings[language]["cmddesc.info"],
      "func": "info_func",
-     "admin": False}
+     "admin": False},
+
+    # {"cmd": "help",
+    #  "desc": strings[language]["cmddesc.help"],
+    #  "func": "help_func",
+    #  "admin": False}
 ]
 
 if enableMacroModule == True:
@@ -473,7 +480,7 @@ def take_screenshot(chat_id):
     bio.name = "screenshot.png"
     screenshot.save(bio, "PNG")
     bio.seek(0)
-    bot.send_photo(chat_id, bio, caption=strings[language]["scrshot_capt"].format(NOW=get_time())) # sends the taken screenshot right away
+    bot.send_photo(chat_id, bio, caption=strings[language]["caption.screenshot"].format(NOW=get_time())) # sends the taken screenshot right away
 
 # record a video into RAM
 # supports length and bitrate options
@@ -513,7 +520,7 @@ def record_video_ram(chat_id=None, length=videoLength, bitrate="4000k"):
     now = get_time()
     print(f"[DEBUG] [{now}] finished recording, sending...")
     bot.send_chat_action(chat_id, 'upload_video')
-    bot.send_video(chat_id, video_buffer,caption=strings[language]["vid_capt"].format(NOW=get_time()))
+    bot.send_video(chat_id, video_buffer,caption=strings[language]["caption.video"].format(NOW=get_time()))
 
 def manage_macro(action):
     count = keyPresses
@@ -561,9 +568,9 @@ def authenticate(user_id, target="do unknown action", adminOnly=False, alwaysAll
         return True
     if adminOnly==True and (isauser==True and isanadmin==False):
         print(f"[AUTH] {user_id} tried requesting to {target}, but isn't an admin")
-        bot.send_message(user_id, strings[language]["notanadmin_msg"],parse_mode="Markdown")
+        bot.send_message(user_id, strings[language]["msg.notanadmin"],parse_mode="Markdown")
     print(f"[AUTH] {user_id} tried requesting to {target}, but isn't a user")
-    bot.send_message(user_id, strings[language]["err403msg"],parse_mode="Markdown")
+    bot.send_message(user_id, strings[language]["msg.403"],parse_mode="Markdown")
     return False
 
 def is_admin(user_id):
@@ -579,7 +586,7 @@ def notify_online(force=False):
         now = get_time()
         for uid in USERS:
             print(f"Sending BON to {uid}")
-            bot.send_message(uid,strings[language]["BON_msg"].format(HOSTNAME=hostname,NOW=now),parse_mode="Markdown")
+            bot.send_message(uid,strings[language]["msg.BON"].format(HOSTNAME=hostname,NOW=now),parse_mode="Markdown")
     return
 
 def get_uptime():
@@ -605,29 +612,29 @@ def stop_bot():
 def start_func(message):
     if not authenticate(message.from_user.id,"get the welcome message",COMMANDS_LKUP["start"]["admin"]):
         return
-    bot.reply_to(message,strings[language]["welcome_msg"].format(NAME=USERS[message.from_user.id]))
+    bot.reply_to(message,strings[language]["msg.welcome"].format(NAME=USERS[message.from_user.id]))
 
 def launchpad_func(message):
     if not authenticate(message.from_user.id,"launch the macro .exe",COMMANDS_LKUP["launch"]["admin"]):
         return
     subprocess.Popen(MacroPath)
-    bot.reply_to(message, strings[language]["startedEXE_msg"])
+    bot.reply_to(message, strings[language]["msg.startedEXE"])
 
 def closeapp_func(message):
     if not authenticate(message.from_user.id,"close the app in the front",COMMANDS_LKUP["alt_f4"]["admin"]):
         return
-    sent = bot.send_message(message.chat.id,strings[language]["sendingAltF4_msg"])
+    sent = bot.send_message(message.chat.id,strings[language]["msg.sendingAltF4"])
     keyboard.press('alt')
     keyboard.press('f4')
     keyboard.release('f4')
     keyboard.release('alt')
     delete_msg(sent)
-    bot.reply_to(message,strings[language]["sentAltF4_Msg"])
+    bot.reply_to(message,strings[language]["msg.sentAltF4"])
 
 def minimize_all_func(message):
     if not authenticate(message.from_user.id,"minimize all apps",COMMANDS_LKUP["minimize_all"]["admin"]):
         return
-    sent = bot.send_message(message.chat.id,"Отправляю Win+D...")
+    sent = bot.send_message(message.chat.id,"msg.sendingWinD")
     keyboard.send("win")
     keyboard.press('d')
     keyboard.release('win')
@@ -640,17 +647,17 @@ def startmacro_func(message):
         return
     manage_macro("start")
     if recordOnStart == True:
-        bot.reply_to(message, strings[language]["startsent_vid_msg"])
+        bot.reply_to(message, strings[language]["msg.startsent_vid"])
         chat_id = message.chat.id
         record_video_ram(chat_id)
         return
-    bot.reply_to(message, strings[language]["startsent_novid_msg"])
+    bot.reply_to(message, strings[language]["msg.startsent_novid"])
 
 def stopmacro_func(message):
     if not authenticate(message.from_user.id, "send the stop key",COMMANDS_LKUP["stopmacro"]["admin"]):
         return
     manage_macro("stop")
-    bot.reply_to(message, strings[language]["stopsent_msg"])
+    bot.reply_to(message, strings[language]["msg.stopsent"])
 
 def keyboard_func(message):
     global keyToSend
@@ -662,7 +669,7 @@ def keyboard_func(message):
         keyToSend = parts[1].lower()
     except IndexError:
         pass
-        bot.reply_to(message,strings[language]["nokey_msg"])
+        bot.reply_to(message,strings[language]["msg.nokey"])
         print(Fore.YELLOW+f"[WARN] Key not specified")
         return
     
@@ -670,23 +677,22 @@ def keyboard_func(message):
         try:
             keyboard.send(keyToSend)
         except ValueError:
-            pass
-            bot.reply_to(message,strings[language]["invalidkey_msg"])
+            bot.reply_to(message,strings[language]["msg.invalidkey"])
             print(Fore.YELLOW+f"[WARN] Invalid key specified")
             return
-        bot.reply_to(message,strings[language]["sentkey_msg"].format(SENTKEY=keyToSend))
+        bot.reply_to(message,strings[language]["msg.sentkey"].format(SENTKEY=keyToSend))
 
 def screenshot_func(message):
     if not authenticate(message.from_user.id, "take a screenshot",COMMANDS_LKUP["screenshot"]["admin"]):
         return
-    sent = bot.reply_to(message,strings[language]["takingscrshot_msg"])
+    sent = bot.reply_to(message,strings[language]["msg.takingscreenshot"])
     take_screenshot(message.chat.id)
     delete_msg(sent)
     
 def video_func(message):
     if not authenticate(message.from_user.id, "record a video",COMMANDS_LKUP["video"]["admin"]):
         return
-    sent = bot.send_message(message.chat.id,strings[language]["recordingvid_msg"],parse_mode="Markdown")
+    sent = bot.send_message(message.chat.id,strings[language]["msg.recordingvideo"],parse_mode="Markdown")
     record_video_ram(message.chat.id)
     delete_msg(sent)
 
@@ -699,11 +705,11 @@ def info_func(message):
         tmstatus=strings[language][testmode]
     uptime = get_uptime()
     ping1= time.time()
-    sent = bot.send_message(message.chat.id,strings[language]["chkping_msg"])
+    sent = bot.send_message(message.chat.id,strings[language]["msg.checkingping"])
     ping2=time.time()
     delete_msg(sent)
     ping=round((ping2-ping1)*1000,1) # this is RTT
-    bot.reply_to(message, strings[language]["info_msg"].format(NAME=USERS[message.from_user.id],ISADMIN=strings[language][is_admin(message.from_user.id)],HOSTNAME=hostname,SYSTEM=system,RELEASE=release,KERNELVER=kernelver,NOW=get_time(),PING=ping,VERSION=version,BUILD=build,UPTIME=uptime,TOOKTOSTART=tookToStart,TMSTATUS=tmstatus), parse_mode="Markdown")
+    bot.reply_to(message, strings[language]["msg.info"].format(NAME=USERS[message.from_user.id],ISADMIN=strings[language][is_admin(message.from_user.id)],HOSTNAME=hostname,SYSTEM=system,RELEASE=release,KERNELVER=kernelver,NOW=get_time(),PING=ping,VERSION=version,BUILD=build,UPTIME=uptime,TOOKTOSTART=tookToStart,TMSTATUS=tmstatus), parse_mode="Markdown")
 
 # unfortunately i couldn't find a way to avoid using so much "global" statements
 def stop_func(message):
@@ -715,8 +721,8 @@ def stop_func(message):
     if not authenticate(message.from_user.id,"stop the bot",COMMANDS_LKUP["stop"]["admin"]):
         return
     if isPendingShutdown == True:
-        print(Fore.YELLOW+"[DEBUG] [WARN] user",message.from_user.id,"tried initiating a bot stop, but there's already a",pendingshutdowntype,"at",shtdwntime,"pending")
-        bot.reply_to(message, strings[language]["alrpending_msg"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+        print(Fore.YELLOW+"[WARN] user",message.from_user.id,"tried initiating a bot stop, but there's already a",pendingshutdowntype,"at",shtdwntime,"pending")
+        bot.reply_to(message, strings[language]["msg.alrpending"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
         return
     stopTimer = threading.Timer(shtdwndelay, stop_bot)
     stopTimer.start()
@@ -724,7 +730,7 @@ def stop_func(message):
     pendingshutdowntype = strings[language]["stop"]
     shtdwntime = get_time(shtdwndelay)
     print(Fore.YELLOW+f"[!] Bot stop requested by {message.from_user.id}, stopping at {shtdwntime}...")
-    bot.reply_to(message, strings[language]["pendingstop_msg"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+    bot.reply_to(message, strings[language]["msg.pendingstop"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
     return
 
 def shutdown_func(message):
@@ -732,18 +738,18 @@ def shutdown_func(message):
     global pendingshutdowntype
     global shtdwntime
     
-    if not authenticate(message.from_user.id,"turn off the RPC",COMMANDS_LKUP["shutdown"]["admin"]):
+    if not authenticate(message.from_user.id,"turn off the computer",COMMANDS_LKUP["shutdown"]["admin"]):
         return
     if isPendingShutdown == True:
         print(Fore.YELLOW+f"[DEBUG] [WARN] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
-        bot.reply_to(message, strings[language]["alrpending_msg"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+        bot.reply_to(message, strings[language]["msg.alrpending"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
         return
     subprocess.Popen(SHUTDOWN_PATH)
     isPendingShutdown = True
     pendingshutdowntype = strings[language]["shutdown"]
     shtdwntime = get_time(shtdwndelay)
     print(Fore.YELLOW+f"[!] Shutdown requested by {message.from_user.id}, shutting down at {shtdwntime}...")
-    bot.reply_to(message, strings[language]["pendingshutdown_msg"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime),parse_mode="Markdown")
+    bot.reply_to(message, strings[language]["msg.pendingshutdown"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime),parse_mode="Markdown")
     return
 
 def reboot_func(message):
@@ -754,15 +760,15 @@ def reboot_func(message):
     if not authenticate(message.from_user.id,"reboot the RPC",COMMANDS_LKUP["reboot"]["admin"]):
         return
     if isPendingShutdown == True:
-        print(Fore.YELLOW+f"[DEBUG] [WARN] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
-        bot.reply_to(message, strings[language]["alrpending_msg"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+        print(Fore.YELLOW+f"[WARN] user {message.from_user.id} tried initiating a shutdown, but there's already a {pendingshutdowntype} at {shtdwntime} pending")
+        bot.reply_to(message, strings[language]["msg.alrpending"].format(PENDINGSHUTDOWNTYPE=pendingshutdowntype,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
         return
     subprocess.Popen(REBOOT_PATH)
     isPendingShutdown = True
     pendingshutdowntype = strings[language]["reboot"]
     shtdwntime = get_time(shtdwndelay)
     print(Fore.YELLOW+f"[!] Reboot requested by {message.from_user.id}, rebooting at {shtdwntime}...")
-    bot.reply_to(message, strings[language]["pendingreboot_msg"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
+    bot.reply_to(message, strings[language]["msg.pendingreboot"].format(SHTDWNDELAY=shtdwndelay,SHTDWNTIME=shtdwntime), parse_mode="Markdown")
     return
 
 def cancel_shutdown_func(message):
@@ -775,14 +781,14 @@ def cancel_shutdown_func(message):
         return
     if isPendingShutdown == False:
         print(Fore.YELLOW+f"[WARN] {message.from_user.id} tried cancelling a shutdown, but there isn't one pending")
-        bot.reply_to(message, strings[language]["shtdwnnotpending_msg"], parse_mode="Markdown")
+        bot.reply_to(message, strings[language]["msg.shtdwnnotpending"], parse_mode="Markdown")
         return
         
     subprocess.Popen(CANCELSHUTDOWN_PATH)
     if pendingshutdowntype == "stop":
         stopTimer.cancel()
     print(Fore.GREEN+f"Pending shutdown cancelled by {message.from_user.id}")
-    bot.reply_to(message,strings[language]["cnclpendingshutdown"].format(TYPE=pendingshutdowntype), parse_mode="Markdown")
+    bot.reply_to(message,strings[language]["msg.cnclpendingshutdown"].format(TYPE=pendingshutdowntype), parse_mode="Markdown")
     isPendingShutdown = False
     return
 
@@ -790,7 +796,7 @@ def settings_func(message):
     if not authenticate(message.from_user.id,"view current settings",COMMANDS_LKUP["settings"]["admin"]):
         return
     recOnStartIsOn=strings[language][recordOnStart]
-    bot.reply_to(message, strings[language]["settings_msg"].format(LANG=strings[language][language],HI=strings[language]["hi"],STARTKEY=startkey,STOPKEY=stopkey,KEYPRESSES=keyPresses,SHTDWNDELAY=shtdwndelay,RECONSTARTISON=recOnStartIsOn), parse_mode="Markdown")
+    bot.reply_to(message, strings[language]["msg.settings"].format(LANG=strings[language][language],HI=strings[language]["hi"],STARTKEY=startkey,STOPKEY=stopkey,KEYPRESSES=keyPresses,SHTDWNDELAY=shtdwndelay,RECONSTARTISON=recOnStartIsOn), parse_mode="Markdown")
     return
 
 def changemacro_func(message):
@@ -843,7 +849,7 @@ def clr_func(message):
         return
     bot.delete_my_commands(language_code="")
     bot.set_my_commands([telebot.types.BotCommand(c["cmd"], c["desc"]) for c in COMMANDS])
-    bot.reply_to(message,strings[language]["updatedcmds_msg"])
+    bot.reply_to(message,strings[language]["msg.updatedcmds"])
 
 @bot.message_handler(commands=['setlang'])
 def setlang(message):
