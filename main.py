@@ -421,36 +421,6 @@ COMMANDS = [
      "desc": strings[language]["cmddesc.keyboard"],
      "func": "keyboard_func",
      "admin": False},
-    
-    # {"cmd": "screenshot",
-    #  "desc": strings[language]["cmddesc.screenshot"],
-    #  "func": "screenshot_func",
-    #  "admin": False},
-    #
-    # {"cmd": "video",
-    #  "desc": strings[language]["cmddesc.video"],
-    #  "func": "video_func",
-    #  "admin": False},
-
-    # {"cmd": "stop",
-    #  "desc": strings[language]["cmddesc.stop"],
-    #  "func": "stop_func",
-    #  "admin": True},
-    #
-    # {"cmd": "shutdown",
-    #  "desc": strings[language]["cmddesc.shutdown"],
-    #  "func": "shutdown_func",
-    #  "admin": True},
-    #
-    # {"cmd": "reboot",
-    #  "desc": strings[language]["cmddesc.reboot"],
-    #  "func": "reboot_func",
-    #  "admin": True},
-    #
-    # {"cmd": "cancelshutdown",
-    #  "desc": strings[language]["cmddesc.cancelshutdown"],
-    #  "func": "cancel_shutdown_func",
-    #  "admin": True},
 
     {"cmd": "settings",
      "desc": strings[language]["cmddesc.settings"],
@@ -462,10 +432,6 @@ COMMANDS = [
      "func": "info_func",
      "admin": False},
 
-    # {"cmd": "help",
-    #  "desc": strings[language]["cmddesc.help"],
-    #  "func": "help_func",
-    #  "admin": False}
 ]
 
 if enableMacroModule == True:
