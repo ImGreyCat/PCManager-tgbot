@@ -17,6 +17,7 @@ except:
 
 print("Importing modules...")
 try: # import modules
+    from utils import *
     import telebot
     import keyboard
     import platform
@@ -497,7 +498,7 @@ def record_video_ram(chat_id=None, length=videoLength, bitrate="4000k"):
     cmd = [
         "ffmpeg",
         "-f", "gdigrab",
-        "-framerate", "60", 
+        "-framerate", "60",
         "-i", "desktop",
         "-t", f"{length}", # this is the video length
         "-vcodec", "libx265", # change this to "libx264" if the video doesn't play
@@ -545,16 +546,6 @@ def manage_macro(action):
         time.sleep(1)
     print("Finished sending")
     return
-
-# returns current time like 12:34:56 with the offset in seconds
-def get_time(offset=0):
-    is24hr = use24HourTime
-    now = datetime.datetime.now() + datetime.timedelta(seconds=offset) # gets current time and adds the offset in seconds
-    if is24hr == True:
-        formatted_time = now.strftime("%H:%M:%S")
-        return formatted_time
-    formatted_time = now.strftime("%I:%M:%S %p")
-    return formatted_time # format and return
 
 # authenticates user, also gets their admin status
 def authenticate(user_id, target="do unknown action", adminOnly=False, alwaysAllow=False):
