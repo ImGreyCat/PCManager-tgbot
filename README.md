@@ -3,6 +3,10 @@ A Telegram bot for managing your computer and game macros remotely\
 Built with pytelegrambotapi on pure spaghetti code!\
 <img width="269" height="246" alt="funnyscreenshot" src="https://github.com/user-attachments/assets/65fc9f48-58e3-48f0-99f8-e854b1812a3a" />
 
+> [!WARNING]
+> I'm too lazy to finish this, but I'll come back to this project later. \
+> The code might be bad right now because I made it back when I knew nothing about Python.
+
 # Features
 - Setting up multiple users/admins
 - Launching your preferred macro's .exe
@@ -11,7 +15,7 @@ Built with pytelegrambotapi on pure spaghetti code!\
 - Taking screenshots and recording videos from your screen
 - Shutting down or rebooting the PC
 - Using a proxy to connect to Telegram
-- Can't find your favorite feature here? Create it using custom commands! 
+- Can't find your favorite feature here? Create it using custom commands! (currently broken)
 
 # Quick Setup
 1. **Download the release**\
@@ -33,7 +37,7 @@ Click the green Code button, then download ZIP to download the code.\
 
 Alternatively, use Git to clone the repository:
 ```
-git clone https://github.com/ImGreyCat/PCManager-tgbot-dev
+git clone https://github.com/ImGreyCat/PCManager-tgbot.git
 ```
    
 2. **Install ffmpeg**
@@ -63,12 +67,12 @@ git clone https://github.com/ImGreyCat/PCManager-tgbot-dev
 > This file has all required modules for manual installation. 
 
 # Need help?
-If you have any questions, found a bug, or need help, simply open an issue [here](https://github.com/ImGreyCat/PCManager-tgbot-dev/issues/new/choose).
+If you have any questions, found a bug, or need help, simply open an issue [here](https://github.com/ImGreyCat/PCManager-tgbot/issues/new/choose).
 Feel free to also create pull requests.
 
 # To do
 
- - [X] Add custom commands support
+ - [ ] Add custom commands support
  - [ ] Allow users to enable or disable certain features
  - [ ] Changing the config without restarts
  - [ ] Add logging
