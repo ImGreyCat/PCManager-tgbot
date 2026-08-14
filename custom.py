@@ -4,6 +4,7 @@
 # [!!!] IMPORTANT: don't blindly paste code you don't understand here! it can make your bot and PC vulnerable!
 
 ### Useful helper functions:
+from utils import *
 # get_time(offset (int, in seconds) - outputs the time in HH:mm:ss (HH:mm:ss AM/PM for 12-hour time) + the offset in seconds (default 0)
 # take_screenshot(chat_id)
 # record_video_ram(chat_id, length (int, in seconds), bitrate (str, ####k))
@@ -27,6 +28,8 @@ CUSTOM_CMDS = [
      "func": "custom_cmd2_func",
      "admin": False},
 ]
+
+COMMANDS_LKUP = {c["cmd"]: c for c in CUSTOM_CMDS}
 
 ### the command functions (make sure the function names match "func" for the corresponding command above!)
 
