@@ -156,6 +156,11 @@ bypassSystemCheck = False
 testmode = False
 # default and recommended: False
 
+try: # overrides the config with settings in devSettings.py
+    from devSettings import *
+except:
+    pass
+
 # Print a message and exit if this file is executed
 if __name__ == "__main__":
     print("The config file can't be executed. Please run the main script instead.")
