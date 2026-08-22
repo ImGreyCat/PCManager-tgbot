@@ -72,8 +72,8 @@ Feel free to also create pull requests.
 
 # To do
 
- - [ ] Add custom commands support
- - [ ] Allow users to enable or disable certain features
+ - [X] Add custom commands support
+ - [X] Allow users to enable or disable certain features
  - [ ] Changing the config without restarts
  - [ ] Add logging
  - [ ] /help command or GitHub wiki
