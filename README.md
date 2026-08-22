@@ -15,7 +15,7 @@ Built with pytelegrambotapi on pure spaghetti code!\
 - Taking screenshots and recording videos from your screen
 - Shutting down or rebooting the PC
 - Using a proxy to connect to Telegram
-- Can't find your favorite feature here? Create it using custom commands! (currently broken)
+- Can't find your favorite feature here? Create it using custom commands!
 
 # Quick Setup
 1. **Download the release**\
